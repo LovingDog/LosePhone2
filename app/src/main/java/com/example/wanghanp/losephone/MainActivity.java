@@ -413,9 +413,9 @@ public class MainActivity extends AppCompatActivity
 //                    +  "   x,y,z = "+ motion[0] + "," + motion[1] + "," + motion[2] + "\n"
 //                    +  "Y轴角度 :" + angle);
             counter = 1;
-            if ((event.values[0] > 0.4) || (event.values[1] > 0.4) || (event.values[2] > 0.4)
-                    || (gravity[0] > 0.4) || (gravity[1] > 0.4) || (gravity[2] > 0.4)
-                    || (motion[0] > 0.4 ) || (motion[1] > 0.4) || (motion[2] > 0.4)) {
+            if ((event.values[0] > 0.2) || (event.values[1] > 0.2) || (event.values[2] > 0.2)
+                    || (gravity[0] > 0.2) || (gravity[1] > 0.2) || (gravity[2] > 0.2)
+                    || (motion[0] > 0.2 ) || (motion[1] > 0.2) || (motion[2] > 0.2)) {
 //                Toast.makeText(this,"shake phone",Toast.LENGTH_LONG).show();
                 if (mSlideSetting != null) {
                     if (mLockScreenState == 2 && mBatteryStatus == 4){
@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
-            if (mPeaceCount == 30) {
+            if (mPeaceCount == 15) {
                 handler.removeCallbacks(task);
                 handler.post(task );
                 mPeaceCount = 0;

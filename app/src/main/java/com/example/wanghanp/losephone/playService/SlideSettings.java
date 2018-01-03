@@ -20,8 +20,8 @@ import android.view.WindowManager;
 public class SlideSettings {
 
     private static final String TAG = "SlideSettings";
-    private static final long MUSIC_WEAKEN_TIME = 5;
-    private static final long MUSIC_ENHANCEMENT_TIME =15;
+    private static final long MUSIC_WEAKEN_TIME = 1000;
+    private static final long MUSIC_ENHANCEMENT_TIME =1000;
     public static final String KEY_DISPLAY_FORM_MAGAZINE = "Display_Form_Magazine";
     public static final String KEY_DISPLAY_FORM = "DisplayForm";
     public static final String KEY_BACKGROUND_MUSIC = "Background_music";
