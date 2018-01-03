@@ -13,10 +13,12 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+
 public class CameraManager {
 
     private Camera mCamera;
     private SurfaceHolder mHolder;
+    private boolean mSafeTakePhotos = true;
 
     public CameraManager(Camera camera, SurfaceHolder holder) {
         mCamera = camera;
@@ -48,7 +50,7 @@ public class CameraManager {
             mCamera.setDisplayOrientation(90);
         } catch (RuntimeException e) {
             e.printStackTrace();
-            Log.d("wanghp007", "openCamera: e == "+e);
+//            Log.d("wanghp007", "openCamera: e == "+e);
             return false;
         }
         // 开启前置失败
@@ -68,6 +70,7 @@ public class CameraManager {
         }
         // 如果成功开始实时预览
         mCamera.startPreview();
+        mSafeTakePhotos = true;
         return true;
     }
 
@@ -113,7 +116,15 @@ public class CameraManager {
         SimpleDateFormat dateFormat = new SimpleDateFormat("'LOCK'_yyyyMMdd_HHmmss");
         return dateFormat.format(date) + ".jpg";
     }
-    
+
+    public void setmSafeTakePhotos(boolean mSafeTakePhotos) {
+        this.mSafeTakePhotos = mSafeTakePhotos;
+    }
+
+    public boolean ismSafeTakePhotos() {
+        return mSafeTakePhotos;
+    }
+
     /**
      * 拍照成功回调
      */
@@ -144,6 +155,10 @@ public class CameraManager {
                 mFile.mkdirs();
             }
             File pictureFile = new File(PHOTO_PATH, getPhotoFileName());
+            if (pictureFile == null) {
+                mSafeTakePhotos = true;
+                return;
+            }
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);

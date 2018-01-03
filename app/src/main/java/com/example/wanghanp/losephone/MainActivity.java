@@ -15,6 +15,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,12 +28,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.playService.SlideSettings;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener,SensorListener.PowerConnectionListener {
@@ -60,6 +70,14 @@ public class MainActivity extends AppCompatActivity
     private Camera mFrontCamera;
     private CameraManager mCameramanager;
     private boolean mHasFocus = true;
+
+    @InjectView(R.id.viewpager)
+    public ViewPager mViewPager;
+    public List<ImageView> mlist;
+    @InjectView(R.id.tv_bannertext)
+    public TextView mTextView;
+    @InjectView(R.id.points)
+    public LinearLayout mLinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +107,77 @@ public class MainActivity extends AppCompatActivity
         mSlideSetting = SlideSettings.getInstance(MainActivity.this);
         initSensor();
         initCamera();
+        initData();
         //do
+    }
+
+
+    // 广告图素材
+    private int[] bannerImages = {R.mipmap.image1, R.mipmap.image2, R.mipmap.image3};
+    // 广告语
+    private String[] bannerTexts = {"因为专业 所以卓越", "坚持创新 行业领跑", "诚信 专业 双赢", "精细 和谐 大气 开放"};
+
+    // ViewPager适配器与监听器
+    private BannerAdapter mAdapter;
+    private BannerListener bannerListener;
+
+    // 圆圈标志位
+    private int pointIndex = 0;
+    // 线程标志
+    private boolean isStop = false;
+
+
+
+
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        mlist = new ArrayList<ImageView>();
+
+        View view;
+        LinearLayout.LayoutParams params;
+        for (int i = 0; i < bannerImages.length; i++) {
+            // 设置广告图
+            ImageView imageView = new ImageView(this);
+            imageView.setBackgroundResource(bannerImages[i]);
+            mlist.add(imageView);
+            // 设置圆圈点
+            view = new View(this);
+            params = new LinearLayout.LayoutParams(5, 5);
+            params.leftMargin = 10;
+            view.setBackgroundResource(R.drawable.banner_circle_unchecked);
+            view.setLayoutParams(params);
+            view.setEnabled(false);
+            mLinearLayout.addView(view);
+        }
+        mAdapter = new BannerAdapter(mlist);
+        mViewPager.setAdapter(mAdapter);
+    }
+
+
+    //实现VierPager监听器接口
+    class BannerListener implements ViewPager.OnPageChangeListener {
+
+        @Override
+        public void onPageScrollStateChanged(int arg0) {
+        }
+
+        @Override
+        public void onPageScrolled(int arg0, float arg1, int arg2) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            int newPosition = position % bannerImages.length;
+            mTextView.setText(bannerTexts[newPosition]);
+            mLinearLayout.getChildAt(newPosition).setEnabled(true);
+            mLinearLayout.getChildAt(pointIndex).setEnabled(false);
+            // 更新标志位
+            pointIndex = newPosition;
+
+        }
+
     }
 
     private void initCamera() {
