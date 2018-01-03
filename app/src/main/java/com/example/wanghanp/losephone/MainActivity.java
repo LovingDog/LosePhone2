@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.BatteryManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,6 +43,7 @@ import com.example.wanghanp.receiver.SensorListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mCameraView = (SurfaceView) findViewById(R.id.back_surfaceview);
         setSupportActionBar(toolbar);
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity
         }
         mAdapter = new BannerAdapter(mlist);
         mViewPager.setAdapter(mAdapter);
+        mViewPager.setOnPageChangeListener(bannerListener);
     }
 
 

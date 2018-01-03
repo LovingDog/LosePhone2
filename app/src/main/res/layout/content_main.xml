@@ -54,7 +54,7 @@
                     android:layout_marginLeft="20dp"
                     android:alpha="0.6"
                     android:padding="5dp"
-                    android:text="今日微商 1579" />
+                    android:text="" />
 
                 <LinearLayout
                     android:id="@+id/points"
@@ -63,6 +63,14 @@
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"></LinearLayout>
             </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyview_takephotos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:spanCount="5"
+                android:nestedScrollingEnabled="false">
+
+            </android.support.v7.widget.RecyclerView>
         </RelativeLayout>
     </LinearLayout>
 
