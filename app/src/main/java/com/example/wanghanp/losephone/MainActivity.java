@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
-    private int mBackUpTime = 5;
+    private int mBackUpTime = 10;
     private boolean mShake  = false;
     private int mLockScreenState;
     private int mBatteryStatus = -1;
@@ -102,17 +102,25 @@ public class MainActivity extends AppCompatActivity
             mFrontCamera = mCameramanager.getCamera();
             //自动对焦
             if (mHasFocus) {
-                mFrontCamera.autoFocus(mAutoFocus);
+                try {
+                    mFrontCamera.autoFocus(mAutoFocus);
+                } catch (RuntimeException e) {
+                    Log.d("wanghp007", "takeFrontPhoto2: e == " +e);
+                }
             }
             // 拍照
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-                }
-            },2000);
+            handler.removeCallbacks(takeTask);
+            handler.postDelayed(takeTask,500);
         }
     }
+
+    Runnable takeTask = new Runnable() {
+        @Override
+        public void run() {
+            mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
+            mCameramanager.setmSafeTakePhotos(false);
+        }
+    };
 
     /**
      * @return 开启前置摄像头照相
@@ -162,14 +170,14 @@ public class MainActivity extends AppCompatActivity
             public void onScreenOn() {
                 Log.d("wanghp007", "onScreenOn: ");
                 mLockScreenState = 0;
-                mBackUpTime = 5;
+                mBackUpTime = 10;
             }
 
             @Override
             public void onScreenOff() {
                 Log.d("wanghp007", "onScreenOff: ");
                 mLockScreenState = 1;
-                mBackUpTime = 5;
+                mBackUpTime = 15;
             }
 
             @Override
@@ -184,7 +192,7 @@ public class MainActivity extends AppCompatActivity
             public void onUserUnlock() {
                 Log.d("wanghp007", "onUserUnlock: ");
                 mLockScreenState = 3;
-                mBackUpTime = 5;
+                mBackUpTime = 15;
             }
         });
     }
@@ -305,6 +313,7 @@ public class MainActivity extends AppCompatActivity
 
         //避免频繁扫屏，每10次变化显示一次值
         if(counter ++ % mBackUpTime == 0){
+            Log.d("wanghp007", "onSensorChanged: counter == " +counter);
 //            Log.d("wanghp007", "onSensorChanged: "+"   x,y,z = "+ event.values[0] + "," + event.values[1] + "," + event.values[2] + "\n"
 //                    +  "Gravity values : \n"
 //                    +  "   x,y,z = "+ gravity[0] + "," + gravity[1] + "," + gravity[2] + "\n"
@@ -312,19 +321,21 @@ public class MainActivity extends AppCompatActivity
 //                    +  "   x,y,z = "+ motion[0] + "," + motion[1] + "," + motion[2] + "\n"
 //                    +  "Y轴角度 :" + angle);
             counter = 1;
-            if ((event.values[0] > 0.3) || (event.values[1] > 0.3) || (event.values[2] > 0.3)
-                    || (gravity[0] > 0.3) || (gravity[1] > 0.3) || (gravity[2] > 0.3)
-                    || (motion[0] > 0.3 ) || (motion[1] > 0.3) || (motion[2] > 0.3)) {
-                Toast.makeText(this,"shake phone",Toast.LENGTH_LONG).show();
+            if ((event.values[0] > 0.4) || (event.values[1] > 0.4) || (event.values[2] > 0.4)
+                    || (gravity[0] > 0.4) || (gravity[1] > 0.4) || (gravity[2] > 0.4)
+                    || (motion[0] > 0.4 ) || (motion[1] > 0.4) || (motion[2] > 0.4)) {
+//                Toast.makeText(this,"shake phone",Toast.LENGTH_LONG).show();
                 if (mSlideSetting != null) {
                     if (mLockScreenState == 2 && mBatteryStatus == 4){
+                        Log.d("wanghp007", "onSensorChanged: unTakePhotos");
                         // do user operation
                     } else {
-                        if (mSlideSetting.isPlayerPlaying()) {
-                            mSlideSetting.playWeakenMusic(this);
+                        Log.d("wanghp007", "onSensorChanged: TakePhotos");
+                        if (!mSlideSetting.isPlayerPlaying()) {
+                            Log.d("wanghp007", "onSensorChanged: mSlideSetting.isPlayerPlaying():"+mSlideSetting.isPlayerPlaying());
+                            mSlideSetting.playEnhancementMusic(MainActivity.this);
+                            takeFrontPhoto2();
                         }
-                        mSlideSetting.playEnhancementMusic(MainActivity.this);
-                        takeFrontPhoto2();
                     }
                 }
                 mShake = true;
@@ -337,9 +348,10 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
-            if (mPeaceCount == 15) {
+            if (mPeaceCount == 30) {
                 handler.removeCallbacks(task);
                 handler.post(task );
+                mPeaceCount = 0;
             }
         }
     }
