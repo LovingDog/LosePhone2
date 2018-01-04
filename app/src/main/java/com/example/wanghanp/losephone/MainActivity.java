@@ -1,15 +1,12 @@
 package com.example.wanghanp.losephone;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.BatteryManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +14,7 @@ import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -32,14 +30,17 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.playService.SlideSettings;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
+import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.base.ViewHolder;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     private Camera mFrontCamera;
     private CameraManager mCameramanager;
     private boolean mHasFocus = true;
+    private List<TakePhotoBean> mPath;
 
     @InjectView(R.id.viewpager)
     public ViewPager mViewPager;
@@ -80,6 +82,11 @@ public class MainActivity extends AppCompatActivity
     public TextView mTextView;
     @InjectView(R.id.points)
     public LinearLayout mLinearLayout;
+    @InjectView(R.id.recyclerview_takephotos)
+    public RecyclerView mTakePhotoRecyclerView;
+
+    private int mSpanCount = 5;
+    private CommonAdapter<TakePhotoBean> mCommonAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,11 +121,36 @@ public class MainActivity extends AppCompatActivity
         //do
     }
 
+    private void initTakePhotosAdpater(List<TakePhotoBean> path) {
+        Log.d("wanghp0077", "initTakePhotosAdpater: "+path.size());
+        mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this,R.layout.list_item_takephotos,path) {
+            @Override
+            protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
+                Log.d("wanghp0077", "convert: path== " +takePhotoBean.getPath());
+                ImageView img = holder.getView(R.id.iv_takephotos);
+                img.setBackgroundResource(R.mipmap.ic_launcher);
+            }
+        };
+
+//        mCommonAdapter = new CommonAdapter<TakePhotoBean>(this,R.layout.list_item_takephotos,path) {
+//            @Override
+//            protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
+//                Log.d("wanghp0077", "convert: path== " +takePhotoBean.getPath());
+//                ImageView img = holder.getView(R.id.iv_takephotos);
+//                img.setBackgroundResource(R.mipmap.ic_launcher);
+////                Glide.with(mContext).load(s)
+//////                .override(mMobileInfo.getScreenWidth() / mSpanCount -(mSpanCount *5),200)
+////                        .into(img);
+//            }
+//        };
+        Log.d("wanghp0077", "mTakePhotoRecyclerView== null: "+(mTakePhotoRecyclerView == null));
+        mTakePhotoRecyclerView.setAdapter(mCommonAdapter);
+    }
 
     // 广告图素材
-    private int[] bannerImages = {R.mipmap.image1, R.mipmap.image2, R.mipmap.image3};
+    private int[] bannerImages = {R.mipmap.image1, R.mipmap.image2, R.mipmap.image3, R.mipmap.image1};
     // 广告语
-    private String[] bannerTexts = {"因为专业 所以卓越", "坚持创新 行业领跑", "诚信 专业 双赢", "精细 和谐 大气 开放"};
+    private String[] bannerTexts = {"因为因为 所以所以", "莫道桑榆晚，微霞尚满天", "心平则智", "精细 和谐 大气 开放"};
 
     // ViewPager适配器与监听器
     private BannerAdapter mAdapter;
@@ -128,9 +160,6 @@ public class MainActivity extends AppCompatActivity
     private int pointIndex = 0;
     // 线程标志
     private boolean isStop = false;
-
-
-
 
     /**
      * 初始化数据
@@ -155,6 +184,7 @@ public class MainActivity extends AppCompatActivity
             mLinearLayout.addView(view);
         }
         mAdapter = new BannerAdapter(mlist);
+        bannerListener = new BannerListener();
         mViewPager.setAdapter(mAdapter);
         mViewPager.setOnPageChangeListener(bannerListener);
     }
@@ -186,7 +216,28 @@ public class MainActivity extends AppCompatActivity
 
     private void initCamera() {
         mSurfaceHolder = mCameraView.getHolder();
-        mCameramanager = new CameraManager(mFrontCamera,mSurfaceHolder);
+        mPath = new ArrayList<TakePhotoBean>();
+        TakePhotoBean takePhotoBean = new TakePhotoBean();
+        takePhotoBean.setPath("1");
+        mPath.add(takePhotoBean);
+        TakePhotoBean takePhotoBean2 = new TakePhotoBean();
+        takePhotoBean2.setPath("1");
+        mPath.add(takePhotoBean2);
+        mCameramanager = new CameraManager(mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
+            @Override
+            public void takePhotosSuccessListener(File file) {
+//                if (file.exists()) {
+                    Log.d("wanghp007", "takePhotosSuccessListener: file"+file.exists()+"path == " +file.getAbsolutePath());
+                TakePhotoBean takePhotoBean = new TakePhotoBean();
+                takePhotoBean.setPath(file.getAbsolutePath());
+                mPath.add(takePhotoBean);
+                initTakePhotosAdpater(mPath);
+//                    mCommonAdapter.notifyDataSetChanged();
+//                initTakePhotosAdpater();
+//                mTakePhotosAdapter.
+//                }
+            }
+        });
     }
 
     private void takeFrontPhoto2() {
@@ -405,7 +456,7 @@ public class MainActivity extends AppCompatActivity
 
         //避免频繁扫屏，每10次变化显示一次值
         if(counter ++ % mBackUpTime == 0){
-            Log.d("wanghp007", "onSensorChanged: counter == " +counter);
+//            Log.d("wanghp007", "onSensorChanged: counter == " +counter);
 //            Log.d("wanghp007", "onSensorChanged: "+"   x,y,z = "+ event.values[0] + "," + event.values[1] + "," + event.values[2] + "\n"
 //                    +  "Gravity values : \n"
 //                    +  "   x,y,z = "+ gravity[0] + "," + gravity[1] + "," + gravity[2] + "\n"

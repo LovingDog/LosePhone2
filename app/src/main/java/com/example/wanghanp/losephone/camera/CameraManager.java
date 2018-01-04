@@ -19,11 +19,12 @@ public class CameraManager {
     private Camera mCamera;
     private SurfaceHolder mHolder;
     private boolean mSafeTakePhotos = true;
+    private TakePhotosListener mTakePhotosListener;
 
-    public CameraManager(Camera camera, SurfaceHolder holder) {
+    public CameraManager(Camera camera, SurfaceHolder holder,TakePhotosListener takePhotosListener) {
         mCamera = camera;
         mHolder = holder;
-
+        this.mTakePhotosListener = takePhotosListener;
     }
 
     public Camera getCamera() {
@@ -155,6 +156,8 @@ public class CameraManager {
                 mFile.mkdirs();
             }
             File pictureFile = new File(PHOTO_PATH, getPhotoFileName());
+            mTakePhotosListener.takePhotosSuccessListener(pictureFile);
+            Log.d("wanghp007", "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
             if (pictureFile == null) {
                 mSafeTakePhotos = true;
                 return;
@@ -164,7 +167,8 @@ public class CameraManager {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                 bitmap.recycle();
                 fos.close();
-                Log.i(TAG, "拍摄成功！");
+                Log.i(TAG, "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
+
             } catch (Exception error) {
                 Log.e(TAG, "拍摄失败");
                 error.printStackTrace();
@@ -225,4 +229,7 @@ public class CameraManager {
         return true;
     }
 
+    public interface TakePhotosListener{
+        void takePhotosSuccessListener(File file);
+    }
 }

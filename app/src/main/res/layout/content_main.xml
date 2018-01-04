@@ -8,16 +8,8 @@
     tools:context="com.example.wanghanp.losephone.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="事例"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
     <LinearLayout
-        android:layout_width="368dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:layout_editor_absoluteY="0dp"
@@ -53,8 +45,10 @@
                     android:layout_gravity="left"
                     android:layout_marginLeft="20dp"
                     android:alpha="0.6"
+                    android:background="@drawable/corner_banner_tip"
                     android:padding="5dp"
-                    android:text="" />
+                    android:textColor="@color/white"
+                    android:text="抚平心灵皱纹，永驻清楚" />
 
                 <LinearLayout
                     android:id="@+id/points"
@@ -63,15 +57,15 @@
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"></LinearLayout>
             </LinearLayout>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyview_takephotos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:spanCount="5"
-                android:nestedScrollingEnabled="false">
 
-            </android.support.v7.widget.RecyclerView>
         </RelativeLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerview_takephotos"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_height="350dp">
+
+        </android.support.v7.widget.RecyclerView>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
