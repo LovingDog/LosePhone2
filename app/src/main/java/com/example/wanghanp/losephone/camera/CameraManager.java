@@ -110,7 +110,7 @@ public class CameraManager {
     /**
      * 定义图片保存的路径和图片的名字
      */
-    public final static String PHOTO_PATH = "mnt/sdcard/CAMERA_DEMO/Camera/";
+    public final static String PHOTO_PATH = "mnt/sdcard/LosePhone/Camera/";
 
     public static String getPhotoFileName() {
         Date date = new Date(System.currentTimeMillis());

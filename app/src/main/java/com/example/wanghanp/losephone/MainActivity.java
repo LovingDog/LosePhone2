@@ -131,21 +131,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initRecyclerView() {
-        mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mScreenWidth / 5));
+        mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
         mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this,mSpanCount));//设置为listview的布局
         mTakePhotoRecyclerView.setItemAnimator(new DefaultItemAnimator());//设置动画
         mTakePhotoRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));//添加分割线
     }
 
     private void initTakePhotosAdpater(List<TakePhotoBean> path) {
-        Log.d("wanghp0077", "initTakePhotosAdpater: "+path.size());
         mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this,R.layout.list_item_takephotos,path) {
             @Override
             protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
-                Log.d("wanghp0077", "convert: path== " +takePhotoBean.getPath());
                 ImageView img = holder.getView(R.id.iv_takephotos);
+                img.setLayoutParams(new LinearLayout.LayoutParams(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount));
                 Glide.with(mContext).load(takePhotoBean.getPath())
-                .override(mScreenWidth / mSpanCount -(mSpanCount *5),mScreenWidth / mSpanCount)
+                .override(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount)
                         .into(img);
             }
         };
@@ -258,39 +257,6 @@ public class MainActivity extends AppCompatActivity
             mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
         }
     };
-
-    /**
-     * @return 开启前置摄像头照相
-     */
-    private void takeFrontPhoto() {
-        Log.d("wanghp007", "takeFrontPhoto: ");
-        Log.d("wanghp007", "takeFrontPhoto: "+mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT));
-
-//        if (mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT)) {
-//           handler.postDelayed(new Runnable() {
-//               @Override
-//               public void run() {
-//                   mFrontCamera = mCameramanager.getCamera();
-//                   //自动对焦
-//                   mFrontCamera.autoFocus(mAutoFocus);
-//                   // 拍照
-//                   mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-//               }
-//           },2000);
-//        }
-
-        if(mCameramanager.openFacingFrontCamera())
-        {
-            try {
-                //因为开启摄像头需要时间，这里让线程睡2秒
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {}
-            //拍照
-            mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-        }
-        else{
-        }
-    }
 
     private void initSensor() {
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
