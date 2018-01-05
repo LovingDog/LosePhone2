@@ -35,7 +35,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:orientation="vertical"
-
                 android:padding="5dp">
 
                 <TextView
@@ -59,13 +58,7 @@
             </LinearLayout>
 
         </RelativeLayout>
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview_takephotos"
-            android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_height="350dp">
-
-        </android.support.v7.widget.RecyclerView>
+        <include layout="@layout/lay_takephotos"></include>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

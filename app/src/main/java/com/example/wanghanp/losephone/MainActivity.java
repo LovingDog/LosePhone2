@@ -14,6 +14,10 @@ import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -27,16 +31,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.playService.SlideSettings;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
+import com.example.wanghanp.util.MobileInfo;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
@@ -59,7 +66,7 @@ public class MainActivity extends AppCompatActivity
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
-    private int mBackUpTime = 10;
+    private int mBackUpTime = 50;
     private boolean mShake  = false;
     private int mLockScreenState;
     private int mBatteryStatus = -1;
@@ -87,6 +94,7 @@ public class MainActivity extends AppCompatActivity
 
     private int mSpanCount = 5;
     private CommonAdapter<TakePhotoBean> mCommonAdapter;
+    private int mScreenWidth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +126,15 @@ public class MainActivity extends AppCompatActivity
         initSensor();
         initCamera();
         initData();
+        initRecyclerView();
         //do
+    }
+
+    private void initRecyclerView() {
+        mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,mScreenWidth / 5));
+        mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this,mSpanCount));//设置为listview的布局
+        mTakePhotoRecyclerView.setItemAnimator(new DefaultItemAnimator());//设置动画
+        mTakePhotoRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));//添加分割线
     }
 
     private void initTakePhotosAdpater(List<TakePhotoBean> path) {
@@ -128,21 +144,11 @@ public class MainActivity extends AppCompatActivity
             protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
                 Log.d("wanghp0077", "convert: path== " +takePhotoBean.getPath());
                 ImageView img = holder.getView(R.id.iv_takephotos);
-                img.setBackgroundResource(R.mipmap.ic_launcher);
+                Glide.with(mContext).load(takePhotoBean.getPath())
+                .override(mScreenWidth / mSpanCount -(mSpanCount *5),mScreenWidth / mSpanCount)
+                        .into(img);
             }
         };
-
-//        mCommonAdapter = new CommonAdapter<TakePhotoBean>(this,R.layout.list_item_takephotos,path) {
-//            @Override
-//            protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
-//                Log.d("wanghp0077", "convert: path== " +takePhotoBean.getPath());
-//                ImageView img = holder.getView(R.id.iv_takephotos);
-//                img.setBackgroundResource(R.mipmap.ic_launcher);
-////                Glide.with(mContext).load(s)
-//////                .override(mMobileInfo.getScreenWidth() / mSpanCount -(mSpanCount *5),200)
-////                        .into(img);
-//            }
-//        };
         Log.d("wanghp0077", "mTakePhotoRecyclerView== null: "+(mTakePhotoRecyclerView == null));
         mTakePhotoRecyclerView.setAdapter(mCommonAdapter);
     }
@@ -165,8 +171,8 @@ public class MainActivity extends AppCompatActivity
      * 初始化数据
      */
     private void initData() {
+        mScreenWidth = MobileInfo.getInstance(MainActivity.this).getScreenWidth();
         mlist = new ArrayList<ImageView>();
-
         View view;
         LinearLayout.LayoutParams params;
         for (int i = 0; i < bannerImages.length; i++) {
@@ -217,25 +223,14 @@ public class MainActivity extends AppCompatActivity
     private void initCamera() {
         mSurfaceHolder = mCameraView.getHolder();
         mPath = new ArrayList<TakePhotoBean>();
-        TakePhotoBean takePhotoBean = new TakePhotoBean();
-        takePhotoBean.setPath("1");
-        mPath.add(takePhotoBean);
-        TakePhotoBean takePhotoBean2 = new TakePhotoBean();
-        takePhotoBean2.setPath("1");
-        mPath.add(takePhotoBean2);
         mCameramanager = new CameraManager(mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
             @Override
             public void takePhotosSuccessListener(File file) {
-//                if (file.exists()) {
                     Log.d("wanghp007", "takePhotosSuccessListener: file"+file.exists()+"path == " +file.getAbsolutePath());
                 TakePhotoBean takePhotoBean = new TakePhotoBean();
                 takePhotoBean.setPath(file.getAbsolutePath());
                 mPath.add(takePhotoBean);
                 initTakePhotosAdpater(mPath);
-//                    mCommonAdapter.notifyDataSetChanged();
-//                initTakePhotosAdpater();
-//                mTakePhotosAdapter.
-//                }
             }
         });
     }
@@ -261,7 +256,6 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void run() {
             mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-            mCameramanager.setmSafeTakePhotos(false);
         }
     };
 
@@ -434,6 +428,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
+//            Log.d("wanghp008","TYPE_GYROSCOPE");
 //            showInfo("事件：" + " x:" + sensorEvent.values[0] + " y:" + sensorEvent.values[1]  + " z:" + sensorEvent.values[2]);
         }
 
@@ -455,28 +450,23 @@ public class MainActivity extends AppCompatActivity
             angle = - angle;
 
         //避免频繁扫屏，每10次变化显示一次值
+        Log.d("wanghp008", "onSensorChanged: counter ++ == " +counter +++"&&mBackUpTime = " +mBackUpTime+"&& % = " +counter ++ % mBackUpTime);
         if(counter ++ % mBackUpTime == 0){
-//            Log.d("wanghp007", "onSensorChanged: counter == " +counter);
-//            Log.d("wanghp007", "onSensorChanged: "+"   x,y,z = "+ event.values[0] + "," + event.values[1] + "," + event.values[2] + "\n"
-//                    +  "Gravity values : \n"
-//                    +  "   x,y,z = "+ gravity[0] + "," + gravity[1] + "," + gravity[2] + "\n"
-//                    +  "Motion values : \n"
-//                    +  "   x,y,z = "+ motion[0] + "," + motion[1] + "," + motion[2] + "\n"
-//                    +  "Y轴角度 :" + angle);
             counter = 1;
-            if ((event.values[0] > 0.2) || (event.values[1] > 0.2) || (event.values[2] > 0.2)
-                    || (gravity[0] > 0.2) || (gravity[1] > 0.2) || (gravity[2] > 0.2)
-                    || (motion[0] > 0.2 ) || (motion[1] > 0.2) || (motion[2] > 0.2)) {
-//                Toast.makeText(this,"shake phone",Toast.LENGTH_LONG).show();
+            Log.d("wanghp008", "onSensorChanged_counter == " +counter);
+            if ((event.values[0] > 0.1) || (event.values[1] > 0.1) || (event.values[2] > 0.1)
+                    || (gravity[0] > 0.1) || (gravity[1] > 0.1) || (gravity[2] > 0.1)
+                    || (motion[0] > 0.1 ) || (motion[1] > 0.1) || (motion[2] > 0.1)) {
                 if (mSlideSetting != null) {
                     if (mLockScreenState == 2 && mBatteryStatus == 4){
                         Log.d("wanghp007", "onSensorChanged: unTakePhotos");
                         // do user operation
                     } else {
                         Log.d("wanghp007", "onSensorChanged: TakePhotos");
-                        if (!mSlideSetting.isPlayerPlaying()) {
+                        if (!mSlideSetting.isPlayerPlaying() && mCameramanager.ismSafeTakePhotos()) {
                             Log.d("wanghp007", "onSensorChanged: mSlideSetting.isPlayerPlaying():"+mSlideSetting.isPlayerPlaying());
                             mSlideSetting.playEnhancementMusic(MainActivity.this);
+                            mCameramanager.setmSafeTakePhotos(false);
                             takeFrontPhoto2();
                         }
                     }
@@ -490,7 +480,6 @@ public class MainActivity extends AppCompatActivity
                     mPeaceCount ++ ;
                 }
             }
-
             if (mPeaceCount == 15) {
                 handler.removeCallbacks(task);
                 handler.post(task );

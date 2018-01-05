@@ -158,8 +158,8 @@ public class CameraManager {
             File pictureFile = new File(PHOTO_PATH, getPhotoFileName());
             mTakePhotosListener.takePhotosSuccessListener(pictureFile);
             Log.d("wanghp007", "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
+            mSafeTakePhotos = true;
             if (pictureFile == null) {
-                mSafeTakePhotos = true;
                 return;
             }
             try {
