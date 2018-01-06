@@ -3,15 +3,23 @@ package com.example.wanghanp.losephone.camera;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import android.widget.Toast;
+
+import com.example.wanghanp.base.bean.TakePhotoBean;
+import com.example.wanghanp.losephone.MainActivity;
 
 
 public class CameraManager {
@@ -20,15 +28,24 @@ public class CameraManager {
     private SurfaceHolder mHolder;
     private boolean mSafeTakePhotos = true;
     private TakePhotosListener mTakePhotosListener;
+    private Context mContext;
+    private File mPictureFile;
+    private RemoveMoreFilesListener mRemoveMoreFileListener;
 
-    public CameraManager(Camera camera, SurfaceHolder holder,TakePhotosListener takePhotosListener) {
+    public CameraManager(Context context,Camera camera, SurfaceHolder holder,TakePhotosListener takePhotosListener) {
+        this.mContext = context;
         mCamera = camera;
         mHolder = holder;
         this.mTakePhotosListener = takePhotosListener;
     }
 
+
     public Camera getCamera() {
         return mCamera;
+    }
+
+    public void setmRemoveMoreFileListener(RemoveMoreFilesListener mRemoveMoreFileListener) {
+        this.mRemoveMoreFileListener = mRemoveMoreFileListener;
     }
 
     /**
@@ -162,6 +179,7 @@ public class CameraManager {
             if (pictureFile == null) {
                 return;
             }
+            deleteMoreFile();
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
@@ -179,6 +197,57 @@ public class CameraManager {
             }
         }
 
+    }
+
+    public ArrayList<TakePhotoBean> getTakePhotosList() {
+        mPictureFile = new File(PHOTO_PATH);
+        TakePhotoBean takePhotoBean;
+        ArrayList<TakePhotoBean> pathList = new ArrayList<>();
+        if (mPictureFile.exists() && mPictureFile.isDirectory()) {
+            File[] files = mPictureFile.listFiles();
+            Log.d("wanghp007", "getTakePhotosList: file.length() = " +files.length);
+            int length = files.length;
+            for (int i = 0; i < length; i++) {
+                takePhotoBean = new TakePhotoBean();
+                File file = files[i];
+                if (file.exists()) {
+                    takePhotoBean.setPath(files[i].getAbsolutePath());
+                    pathList.add(takePhotoBean);
+                }
+            }
+        }
+        return  pathList;
+    }
+
+    public void deleteMoreFile() {
+//        Toast.makeText(mContext.getApplicationContext() , "doInBackground: file.length() = " +files.length, Toast.LENGTH_SHORT).show();
+        new AsyncTask<Void,Void,Void>() {
+
+            @Override
+            protected Void doInBackground(Void... files) {
+                while (true) {
+                    if (mPictureFile.exists() && mPictureFile.isDirectory()) {
+                        File[] photosList = mPictureFile.listFiles();
+                        if (photosList.length > 10) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            boolean success = photosList[photosList.length-1].delete();
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                mRemoveMoreFileListener.removeMoreSuccessListener();
+            }
+        }.execute();
     }
 
     //鎵撳紑鍓嶇疆鎽勫儚澶�
@@ -231,5 +300,9 @@ public class CameraManager {
 
     public interface TakePhotosListener{
         void takePhotosSuccessListener(File file);
+    }
+
+    public interface RemoveMoreFilesListener {
+        void removeMoreSuccessListener();
     }
 }

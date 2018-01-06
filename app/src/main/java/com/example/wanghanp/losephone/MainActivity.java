@@ -55,7 +55,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener,SensorListener.PowerConnectionListener {
+        implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener,SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener {
 
     private SlideSettings mSlideSetting;
     private float[] gravity = new float[3];   //重力在设备x、y、z轴上的分量
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity
     @InjectView(R.id.recyclerview_takephotos)
     public RecyclerView mTakePhotoRecyclerView;
 
-    private int mSpanCount = 5;
+    public int mSpanCount = 5;
     private CommonAdapter<TakePhotoBean> mCommonAdapter;
     private int mScreenWidth;
 
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity
         mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
         mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this,mSpanCount));//设置为listview的布局
         mTakePhotoRecyclerView.setItemAnimator(new DefaultItemAnimator());//设置动画
-        mTakePhotoRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));//添加分割线
+//        mTakePhotoRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));//添加分割线
     }
 
     private void initTakePhotosAdpater(List<TakePhotoBean> path) {
@@ -194,6 +194,12 @@ public class MainActivity extends AppCompatActivity
         mViewPager.setOnPageChangeListener(bannerListener);
     }
 
+    @Override
+    public void removeMoreSuccessListener() {
+        mPath = mCameramanager.getTakePhotosList();
+        initTakePhotosAdpater(mPath);
+    }
+
 
     //实现VierPager监听器接口
     class BannerListener implements ViewPager.OnPageChangeListener {
@@ -214,24 +220,32 @@ public class MainActivity extends AppCompatActivity
             mLinearLayout.getChildAt(pointIndex).setEnabled(false);
             // 更新标志位
             pointIndex = newPosition;
-
         }
 
     }
 
     private void initCamera() {
         mSurfaceHolder = mCameraView.getHolder();
-        mPath = new ArrayList<TakePhotoBean>();
-        mCameramanager = new CameraManager(mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
+
+        mCameramanager = new CameraManager(this,mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
             @Override
             public void takePhotosSuccessListener(File file) {
                     Log.d("wanghp007", "takePhotosSuccessListener: file"+file.exists()+"path == " +file.getAbsolutePath());
+                if (mPath == null) {
+                    mPath = new ArrayList<>();
+                }
                 TakePhotoBean takePhotoBean = new TakePhotoBean();
                 takePhotoBean.setPath(file.getAbsolutePath());
                 mPath.add(takePhotoBean);
+                if (mPath.size() > mSpanCount * 2) {
+                    mPath.remove(0);
+                }
                 initTakePhotosAdpater(mPath);
             }
         });
+        mCameramanager.setmRemoveMoreFileListener(this);
+        mPath = mCameramanager.getTakePhotosList();
+        initTakePhotosAdpater(mPath);
     }
 
     private void takeFrontPhoto2() {
@@ -446,7 +460,7 @@ public class MainActivity extends AppCompatActivity
                     mPeaceCount ++ ;
                 }
             }
-            if (mPeaceCount == 15) {
+            if (mPeaceCount == 8) {
                 handler.removeCallbacks(task);
                 handler.post(task );
                 mPeaceCount = 0;
