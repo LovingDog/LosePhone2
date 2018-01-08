@@ -5,7 +5,7 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 public class MobileInfo {
-    private static MobileInfo instance;
+    public static MobileInfo instance;
 
     private MobileInfo(Activity context) {
         this.context = context;

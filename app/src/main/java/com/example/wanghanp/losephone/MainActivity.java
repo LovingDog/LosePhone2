@@ -1,6 +1,8 @@
 package com.example.wanghanp.losephone;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -41,10 +43,13 @@ import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.playService.SlideSettings;
+import com.example.wanghanp.myview.ShowPhotosActivity;
+import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
 import com.example.wanghanp.util.MobileInfo;
 import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
 import java.io.File;
@@ -141,7 +146,8 @@ public class MainActivity extends AppCompatActivity
         mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this,R.layout.list_item_takephotos,path) {
             @Override
             protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
-                ImageView img = holder.getView(R.id.iv_takephotos);
+                ZoomImageView img = holder.getView(R.id.iv_takephotos);
+                img.setScaleType(ImageView.ScaleType.FIT_XY);
                 img.setLayoutParams(new LinearLayout.LayoutParams(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount));
                 Glide.with(mContext).load(takePhotoBean.getPath())
                 .override(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount)
@@ -150,12 +156,23 @@ public class MainActivity extends AppCompatActivity
         };
         Log.d("wanghp0077", "mTakePhotoRecyclerView== null: "+(mTakePhotoRecyclerView == null));
         mTakePhotoRecyclerView.setAdapter(mCommonAdapter);
+        mCommonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
+                startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class));
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
+                return false;
+            }
+        });
     }
 
     // 广告图素材
     private int[] bannerImages = {R.mipmap.image1, R.mipmap.image2, R.mipmap.image3, R.mipmap.image1};
     // 广告语
-    private String[] bannerTexts = {"因为因为 所以所以", "莫道桑榆晚，微霞尚满天", "心平则智", "精细 和谐 大气 开放"};
+    private String[] bannerTexts = {"心静则平", "莫道桑榆晚，微霞尚满天", "心平则智", "一切美好的东西，都以秒计算"};
 
     // ViewPager适配器与监听器
     private BannerAdapter mAdapter;
