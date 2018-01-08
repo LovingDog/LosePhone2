@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 <com.example.wanghanp.myview.ZoomImageView
     android:id="@+id/iv_takephotos"
-    android:layout_width="150dp"
+    android:layout_width="match_parent"
     android:scaleType="fitXY"
-    android:layout_height="150dp"/>
+    android:layout_height="match_parent"/>
 </LinearLayout>

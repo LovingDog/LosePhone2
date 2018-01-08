@@ -7,6 +7,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_show_photos">ShowPhotosActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="curren_page">current_page %1$d</string>
+    <string name="current_page">current_page  %1$d/ %2$d</string>
     <string name="bar_complete">complete</string>
 </resources>

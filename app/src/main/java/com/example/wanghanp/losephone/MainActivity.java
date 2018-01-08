@@ -159,7 +159,13 @@ public class MainActivity extends AppCompatActivity
         mCommonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class));
+                ArrayList<String> list = new ArrayList<String>();
+                for (TakePhotoBean bean:
+                     mPath) {
+                    list.add(bean.getPath());
+                }
+                startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
+                .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA,list));
             }
 
             @Override

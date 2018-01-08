@@ -18,7 +18,7 @@
         android:gravity="center_vertical"
         android:layout_marginLeft="10dp"
         android:textColor="@color/white"
-        android:text="@string/curren_page"/>
+        android:text="@string/current_page"/>
     <LinearLayout
         android:id="@+id/bar_lay_complete"
         android:layout_width="match_parent"

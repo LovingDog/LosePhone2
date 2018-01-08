@@ -6,10 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.wanghanp.base.bean.TakePhotoBean;
+import com.example.wanghanp.losephone.MainActivity;
 import com.example.wanghanp.losephone.R;
+import com.example.wanghanp.myview.ShowPhotosActivity;
 import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.util.MobileInfo;
 
@@ -21,16 +24,21 @@ import java.util.ArrayList;
 
 public class ShowPhotosAdapter extends PagerAdapter {
 
-    private ArrayList<TakePhotoBean> mList;
+    private ArrayList<String> mList;
     private Context mContext;
     private int mScreenWidth;
     private int mScreenheight;
     private MobileInfo mMobileInfo;
-    public ShowPhotosAdapter(ArrayList<TakePhotoBean> list,Context context){
+    public ShowPhotosAdapter(ArrayList<String> list,Context context){
         this.mContext = context;
         this.mList = list;
-        mScreenWidth =
+        mMobileInfo = new MobileInfo((ShowPhotosActivity) mContext);
     }
+
+    public void setData(ArrayList<String> list) {
+        this.mList = list;
+    }
+
     @Override
     public int getCount() {
         return this.mList.size();
@@ -38,23 +46,27 @@ public class ShowPhotosAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return false;
+        return view == object;
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.list_item_takephotos,null);
         ZoomImageView zoomImageView = view.findViewById(R.id.iv_takephotos);
-        TakePhotoBean takePhotoBean = mList.get(position);
-        Glide.with(mContext).load(takePhotoBean.getPath())
-                .override(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount)
-                .into(img);
-        return super.instantiateItem(container, position);
+        zoomImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        String path = mList.get(position);
+        int targetWidth = mMobileInfo.getScreenWidth();
+        int targetHeight = mMobileInfo.getScreenHeight();
+        Glide.with(mContext).load(path)
+                .override(targetWidth,targetHeight)
+                .into(zoomImageView);
+        container.addView(view);
+        return view;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        super.destroyItem(container, position, object);
+        container.removeView((View)object);
     }
 
     @Override
