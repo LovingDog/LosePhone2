@@ -1,13 +1,15 @@
 package com.example.wanghanp.losephone;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +19,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -42,7 +43,8 @@ import com.bumptech.glide.Glide;
 import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
-import com.example.wanghanp.losephone.playService.SlideSettings;
+import com.example.wanghanp.losephone.service.SaveStateService;
+import com.example.wanghanp.losephone.service.SlideSettings;
 import com.example.wanghanp.myview.ShowPhotosActivity;
 import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.receiver.ScreenListener;
@@ -132,6 +134,7 @@ public class MainActivity extends AppCompatActivity
         initCamera();
         initData();
         initRecyclerView();
+        startService(new Intent(MainActivity.this, SaveStateService.class));
         //do
     }
 
@@ -166,6 +169,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
                 .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA,list));
+                mCameramanager.setmSafeTakePhotos(false);
             }
 
             @Override
@@ -284,7 +288,7 @@ public class MainActivity extends AppCompatActivity
             }
             // 拍照
             handler.removeCallbacks(takeTask);
-            handler.postDelayed(takeTask,500);
+            handler.postDelayed(takeTask,10);
         }
     }
 
@@ -351,6 +355,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mHasFocus = true;
+        mCameramanager.setmSafeTakePhotos(true);
     }
 
     @Override
@@ -468,9 +473,8 @@ public class MainActivity extends AppCompatActivity
                         Log.d("wanghp007", "onSensorChanged: TakePhotos");
                         if (!mSlideSetting.isPlayerPlaying() && mCameramanager.ismSafeTakePhotos()) {
                             Log.d("wanghp007", "onSensorChanged: mSlideSetting.isPlayerPlaying():"+mSlideSetting.isPlayerPlaying());
+                            TakePhotosAsncTask();
                             mSlideSetting.playEnhancementMusic(MainActivity.this);
-                            mCameramanager.setmSafeTakePhotos(false);
-                            takeFrontPhoto2();
                         }
                     }
                 }
@@ -489,6 +493,18 @@ public class MainActivity extends AppCompatActivity
                 mPeaceCount = 0;
             }
         }
+    }
+
+    private void TakePhotosAsncTask() {
+        new AsyncTask<Void,Void,Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mCameramanager.setmSafeTakePhotos(false);
+                takeFrontPhoto2();
+                return null;
+            }
+        }.execute();
     }
 
     private Runnable task = new Runnable() {
@@ -533,4 +549,11 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

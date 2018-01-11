@@ -9,4 +9,7 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="current_page">current_page  %1$d/ %2$d</string>
     <string name="bar_complete">complete</string>
+
+    <string name="notification_warn">remind</string>
+    <string name="notification_warn_message">please make LosePhone keep_alive</string>
 </resources>

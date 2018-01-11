@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.MainActivity;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
+
 
 public class CameraManager {
 
@@ -163,40 +165,57 @@ public class CameraManager {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             // 将得到的照片进行270°旋转，使其竖直
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            Matrix matrix = new Matrix();
-            matrix.preRotate(270);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            // 创建并保存图片文件
-            File mFile = new File(PHOTO_PATH);
-            if (!mFile.exists()) {
-                mFile.mkdirs();
-            }
-            File pictureFile = new File(PHOTO_PATH, getPhotoFileName());
-            mTakePhotosListener.takePhotosSuccessListener(pictureFile);
-            Log.d("wanghp007", "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
-            mSafeTakePhotos = true;
-            if (pictureFile == null) {
-                return;
-            }
-            deleteMoreFile();
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                bitmap.recycle();
-                fos.close();
-                Log.i(TAG, "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
-
-            } catch (Exception error) {
-                Log.e(TAG, "拍摄失败");
-                error.printStackTrace();
-            } finally {
-                mCamera.stopPreview();
-                mCamera.release();
-                mCamera = null;
-            }
+            savePhotos(data);
         }
+    }
 
+    private void savePhotos(final byte[] params) {
+        new AsyncTask<byte[],Void,File>() {
+
+            @Override
+            protected File doInBackground(byte[]... bytes) {
+                byte[] data = bytes[0];
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Matrix matrix = new Matrix();
+                matrix.preRotate(270);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                // 创建并保存图片文件
+                File mFile = new File(PHOTO_PATH);
+                if (!mFile.exists()) {
+                    mFile.mkdirs();
+                }
+                File pictureFile = new File(PHOTO_PATH, getPhotoFileName());
+                Log.d("wanghp007", "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
+                mSafeTakePhotos = true;
+                if (pictureFile == null) {
+                    return pictureFile;
+                }
+                try {
+                    FileOutputStream fos = new FileOutputStream(pictureFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    bitmap.recycle();
+                    fos.close();
+                    Log.i(TAG, "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
+
+                } catch (Exception error) {
+                    Log.e(TAG, "拍摄失败");
+                    error.printStackTrace();
+                } finally {
+                    mCamera.stopPreview();
+                    mCamera.release();
+                    mCamera = null;
+                }
+
+                return pictureFile;
+            }
+
+            @Override
+            protected void onPostExecute(File file) {
+                super.onPostExecute(file);
+                mTakePhotosListener.takePhotosSuccessListener(file);
+                deleteMoreFile();
+            }
+        }.execute(params);
     }
 
     public ArrayList<TakePhotoBean> getTakePhotosList() {
