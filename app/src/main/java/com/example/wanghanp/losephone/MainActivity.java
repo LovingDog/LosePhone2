@@ -287,17 +287,14 @@ public class MainActivity extends AppCompatActivity
                 }
             }
             // 拍照
-            handler.removeCallbacks(takeTask);
-            handler.postDelayed(takeTask,10);
+            try {
+                mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
+            }catch (RuntimeException e) {
+                Log.d("wanghp007", "run: e = " +e);
+                mCameramanager.setmSafeTakePhotos(true);
+            }
         }
     }
-
-    Runnable takeTask = new Runnable() {
-        @Override
-        public void run() {
-            mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-        }
-    };
 
     private void initSensor() {
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -471,8 +468,8 @@ public class MainActivity extends AppCompatActivity
                         // do user operation
                     } else {
                         Log.d("wanghp007", "onSensorChanged: TakePhotos");
+                        Log.d("wanghp007", "onSensorChanged: mSlideSetting.isPlayerPlaying():"+mSlideSetting.isPlayerPlaying());
                         if (!mSlideSetting.isPlayerPlaying() && mCameramanager.ismSafeTakePhotos()) {
-                            Log.d("wanghp007", "onSensorChanged: mSlideSetting.isPlayerPlaying():"+mSlideSetting.isPlayerPlaying());
                             TakePhotosAsncTask();
                             mSlideSetting.playEnhancementMusic(MainActivity.this);
                         }
