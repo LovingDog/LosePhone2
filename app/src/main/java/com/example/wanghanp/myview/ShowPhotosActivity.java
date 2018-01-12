@@ -28,6 +28,7 @@ import butterknife.OnClick;
 public class ShowPhotosActivity extends AppCompatActivity {
 
     public static final String LIST_EXTRA = "list";
+    public static final String LIST_INDEX= "index";
     Toolbar mToolbar;
     @InjectView(R.id.bar_back)
     ImageView mBack;
@@ -42,6 +43,7 @@ public class ShowPhotosActivity extends AppCompatActivity {
 
     private ArrayList<String> mPaths;
     private ShowPhotosAdapter mAdapter;
+    private int mCurrentIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,17 +51,19 @@ public class ShowPhotosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_photos);
         ButterKnife.inject(this);
         mPaths = getIntent().getStringArrayListExtra(LIST_EXTRA);
-        initData();
+        mCurrentIndex = getIntent().getIntExtra(LIST_INDEX, 0);
         initAdapter();
+        initData();
     }
 
     private void initData() {
-        mTitle.setText(getResources().getString(R.string.current_page,mViewPager.getCurrentItem()+1,mPaths.size()));
+        mTitle.setText(getResources().getString(R.string.current_page, mViewPager.getCurrentItem() + 1, mPaths.size()));
     }
 
     public void initAdapter() {
-        mAdapter = new ShowPhotosAdapter(mPaths,this);
+        mAdapter = new ShowPhotosAdapter(mPaths, this);
         mViewPager.setAdapter(mAdapter);
+        mViewPager.setCurrentItem(mCurrentIndex);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -78,8 +82,8 @@ public class ShowPhotosActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick({R.id.bar_back,R.id.bar_lay_complete})
-    public void OnClick(View view){
+    @OnClick({R.id.bar_back, R.id.bar_lay_complete})
+    public void OnClick(View view) {
         switch (view.getId()) {
             case R.id.bar_back:
                 finish();

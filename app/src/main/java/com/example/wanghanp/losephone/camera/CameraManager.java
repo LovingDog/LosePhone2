@@ -34,7 +34,7 @@ public class CameraManager {
     private File mPictureFile;
     private RemoveMoreFilesListener mRemoveMoreFileListener;
 
-    public CameraManager(Context context,Camera camera, SurfaceHolder holder,TakePhotosListener takePhotosListener) {
+    public CameraManager(Context context, Camera camera, SurfaceHolder holder, TakePhotosListener takePhotosListener) {
         this.mContext = context;
         mCamera = camera;
         mHolder = holder;
@@ -52,20 +52,17 @@ public class CameraManager {
 
     /**
      * 打开相机
-     * 
-     * @param camera
-     *            照相机对象
-     * @param holder
-     *            用于实时展示取景框内容的控件
-     * @param tagInfo
-     *            摄像头信息，分为前置/后置摄像头 Camera.CameraInfo.CAMERA_FACING_FRONT：前置
-     *            Camera.CameraInfo.CAMERA_FACING_BACK：后置
+     *
+     * @param camera  照相机对象
+     * @param holder  用于实时展示取景框内容的控件
+     * @param tagInfo 摄像头信息，分为前置/后置摄像头 Camera.CameraInfo.CAMERA_FACING_FRONT：前置
+     *                Camera.CameraInfo.CAMERA_FACING_BACK：后置
      * @return 是否成功打开某个摄像头
      */
     public boolean openCamera(int tagInfo) {
         // 尝试开启摄像头
         try {
-            Log.d("wanghp007", "openCamera: getCameraId(tagInfo) == " +getCameraId(tagInfo));
+            Log.d("wanghp007", "openCamera: getCameraId(tagInfo) == " + getCameraId(tagInfo));
             mCamera = Camera.open(getCameraId(tagInfo));
             mCamera.setDisplayOrientation(90);
         } catch (RuntimeException e) {
@@ -170,7 +167,7 @@ public class CameraManager {
     }
 
     private void savePhotos(final byte[] params) {
-        new AsyncTask<byte[],Void,File>() {
+        new AsyncTask<byte[], Void, File>() {
 
             @Override
             protected File doInBackground(byte[]... bytes) {
@@ -185,7 +182,7 @@ public class CameraManager {
                     mFile.mkdirs();
                 }
                 File pictureFile = new File(PHOTO_PATH, getPhotoFileName());
-                Log.d("wanghp007", "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
+                Log.d("wanghp007", "拍摄成功！pictureFile = " + pictureFile.getAbsolutePath());
                 mSafeTakePhotos = true;
                 if (pictureFile == null) {
                     return pictureFile;
@@ -195,15 +192,15 @@ public class CameraManager {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
                     bitmap.recycle();
                     fos.close();
-                    Log.i(TAG, "拍摄成功！pictureFile = " +pictureFile.getAbsolutePath());
+                    Log.i(TAG, "拍摄成功！pictureFile = " + pictureFile.getAbsolutePath());
 
                 } catch (Exception error) {
                     Log.e(TAG, "拍摄失败");
                     error.printStackTrace();
                 } finally {
-                    mCamera.stopPreview();
-                    mCamera.release();
-                    mCamera = null;
+//                    mCamera.stopPreview();
+//                    mCamera.release();
+//                    mCamera = null;
                 }
 
                 return pictureFile;
@@ -218,13 +215,21 @@ public class CameraManager {
         }.execute(params);
     }
 
+    public void ondestroy() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
     public ArrayList<TakePhotoBean> getTakePhotosList() {
         mPictureFile = new File(PHOTO_PATH);
         TakePhotoBean takePhotoBean;
         ArrayList<TakePhotoBean> pathList = new ArrayList<>();
         if (mPictureFile.exists() && mPictureFile.isDirectory()) {
             File[] files = mPictureFile.listFiles();
-            Log.d("wanghp007", "getTakePhotosList: file.length() = " +files.length);
+            Log.d("wanghp007", "getTakePhotosList: file.length() = " + files.length);
             int length = files.length;
             for (int i = 0; i < length; i++) {
                 takePhotoBean = new TakePhotoBean();
@@ -235,12 +240,12 @@ public class CameraManager {
                 }
             }
         }
-        return  pathList;
+        return pathList;
     }
 
     public void deleteMoreFile() {
 //        Toast.makeText(mContext.getApplicationContext() , "doInBackground: file.length() = " +files.length, Toast.LENGTH_SHORT).show();
-        new AsyncTask<Void,Void,Void>() {
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... files) {
@@ -253,7 +258,15 @@ public class CameraManager {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            boolean success = photosList[photosList.length-1].delete();
+                            File file = photosList[photosList.length - 1];
+                            long lTime = file.lastModified();
+                            File file2 = photosList[0];
+                            long sTime = file2.lastModified();
+                            if (sTime > lTime) {
+                                file.delete();
+                            } else {
+                                file2.delete();
+                            }
                         } else {
                             break;
                         }
@@ -317,7 +330,7 @@ public class CameraManager {
         return true;
     }
 
-    public interface TakePhotosListener{
+    public interface TakePhotosListener {
         void takePhotosSuccessListener(File file);
     }
 

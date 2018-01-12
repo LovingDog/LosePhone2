@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.wanghanp.base.bean.TakePhotoBean;
@@ -62,7 +63,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,SensorEventListener,SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener, SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener {
 
     private SlideSettings mSlideSetting;
     private float[] gravity = new float[3];   //重力在设备x、y、z轴上的分量
@@ -74,10 +75,10 @@ public class MainActivity extends AppCompatActivity
     private Sensor mSensor;
 
     private int mBackUpTime = 50;
-    private boolean mShake  = false;
+    private boolean mShake = false;
     private int mLockScreenState;
     private int mBatteryStatus = -1;
-    private int mLocakScreenOriState ;
+    private int mLocakScreenOriState;
     private SensorListener mSensorLisener;
     private int mPeaceCount;
     private ScreenListener mScreenStateListener;
@@ -102,6 +103,8 @@ public class MainActivity extends AppCompatActivity
     public int mSpanCount = 5;
     private CommonAdapter<TakePhotoBean> mCommonAdapter;
     private int mScreenWidth;
+    private int mTakeTime;
+    private Sensor mLightSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,36 +142,36 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initRecyclerView() {
-        mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
-        mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this,mSpanCount));//设置为listview的布局
+        mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, mSpanCount));//设置为listview的布局
         mTakePhotoRecyclerView.setItemAnimator(new DefaultItemAnimator());//设置动画
 //        mTakePhotoRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));//添加分割线
     }
 
     private void initTakePhotosAdpater(List<TakePhotoBean> path) {
-        mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this,R.layout.list_item_takephotos,path) {
+        mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this, R.layout.list_item_takephotos, path) {
             @Override
             protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
                 ZoomImageView img = holder.getView(R.id.iv_takephotos);
                 img.setScaleType(ImageView.ScaleType.FIT_XY);
-                img.setLayoutParams(new LinearLayout.LayoutParams(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount));
+                img.setLayoutParams(new LinearLayout.LayoutParams(mScreenWidth / mSpanCount, mScreenWidth / mSpanCount));
                 Glide.with(mContext).load(takePhotoBean.getPath())
-                .override(mScreenWidth / mSpanCount,mScreenWidth / mSpanCount)
+                        .override(mScreenWidth / mSpanCount, mScreenWidth / mSpanCount)
                         .into(img);
             }
         };
-        Log.d("wanghp0077", "mTakePhotoRecyclerView== null: "+(mTakePhotoRecyclerView == null));
         mTakePhotoRecyclerView.setAdapter(mCommonAdapter);
         mCommonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
                 ArrayList<String> list = new ArrayList<String>();
-                for (TakePhotoBean bean:
-                     mPath) {
+                for (TakePhotoBean bean :
+                        mPath) {
                     list.add(bean.getPath());
                 }
                 startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
-                .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA,list));
+                        .putExtra(ShowPhotosActivity.LIST_INDEX, position)
+                        .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA, list));
                 mCameramanager.setmSafeTakePhotos(false);
             }
 
@@ -254,10 +257,10 @@ public class MainActivity extends AppCompatActivity
     private void initCamera() {
         mSurfaceHolder = mCameraView.getHolder();
 
-        mCameramanager = new CameraManager(this,mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
+        mCameramanager = new CameraManager(this, mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
             @Override
             public void takePhotosSuccessListener(File file) {
-                    Log.d("wanghp007", "takePhotosSuccessListener: file"+file.exists()+"path == " +file.getAbsolutePath());
+                Log.d("wanghp007", "takePhotosSuccessListener: file" + file.exists() + "path == " + file.getAbsolutePath());
                 if (mPath == null) {
                     mPath = new ArrayList<>();
                 }
@@ -276,33 +279,44 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void takeFrontPhoto2() {
-        if ( mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT)) {
+        if (mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT) || mCameramanager.getCamera() != null) {
             mFrontCamera = mCameramanager.getCamera();
             //自动对焦
             if (mHasFocus) {
                 try {
                     mFrontCamera.autoFocus(mAutoFocus);
                 } catch (RuntimeException e) {
-                    Log.d("wanghp007", "takeFrontPhoto2: e == " +e);
+                    Log.d("wanghp007", "takeFrontPhoto2: e == " + e);
                 }
             }
-            // 拍照
-            try {
-                mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-            }catch (RuntimeException e) {
-                Log.d("wanghp007", "run: e = " +e);
-                mCameramanager.setmSafeTakePhotos(true);
-            }
+            TakePhotosAsncTask(3);
         }
     }
 
     private void initSensor() {
-        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        mSensorManager.registerListener(this, mSensor,SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+
+//        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+//        mSensorManager.registerListener(listener, mLightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
+
+//    private SensorEventListener listener=new SensorEventListener() {
+//        @Override
+//        public void onSensorChanged(SensorEvent event) {
+//            float value=event.values[0];
+//            Toast.makeText(getApplicationContext(), "value == "+value, Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+//
+//        }
+//    };
+
     private void initBroadCast() {
-        mSensorLisener = new SensorListener(MainActivity.this,this);
+        mSensorLisener = new SensorListener(MainActivity.this, this);
         mSensorLisener.registerPowerConnection();
         mScreenStateListener = new ScreenListener(this);
         getScreenState();
@@ -342,7 +356,7 @@ public class MainActivity extends AppCompatActivity
         PowerManager manager = (PowerManager) this
                 .getSystemService(Context.POWER_SERVICE);
         if (manager.isScreenOn()) {
-           mLocakScreenOriState = 0;
+            mLocakScreenOriState = 0;
         } else {
             mLocakScreenOriState = -1;
         }
@@ -416,12 +430,15 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         mSensorLisener.unRegisterPowerConnection();
+        mSensorManager.unregisterListener(this);
+//        mSensorManager.unregisterListener(listener);
         if (mSlideSetting != null) {
             mSlideSetting.playWeakenMusic(MainActivity.this);
         }
         if (mScreenStateListener != null) {
             mScreenStateListener.unregisterListener();
         }
+        mCameramanager.ondestroy();
     }
 
     @Override
@@ -432,45 +449,48 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if(event.sensor.getType() == Sensor.TYPE_GYROSCOPE){
-//            Log.d("wanghp008","TYPE_GYROSCOPE");
+        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+        }
+        if ((event.sensor.getType() == Sensor.TYPE_GYROSCOPE || event.sensor.getType() == Sensor.TYPE_ORIENTATION || event.sensor.getType() == Sensor.TYPE_GRAVITY)) {
+            Log.d("wanghp009", "TYPE_GYROSCOPE" + event.sensor.getType());
 //            showInfo("事件：" + " x:" + sensorEvent.values[0] + " y:" + sensorEvent.values[1]  + " z:" + sensorEvent.values[2]);
-        }
-
-        for(int i = 0 ; i < 3; i ++){
+            for (int i = 0; i < 3; i++) {
         /* accelermeter是很敏感的，看之前小例子的log就知道。因为重力是恒力，我们移动设备，它的变化不会太快，不象摇晃手机这样的外力那样突然。因此通过low-pass filter对重力进行过滤。这个低通滤波器的权重，我们使用了0.1和0.9，当然也可以设置为0.2和0.8。 */
-            gravity[i] = (float) (0.1 * event.values[i] + 0.9 * gravity[i]);
-            motion[i] = event.values[i] - gravity[i];
-        }
+                gravity[i] = (float) (0.1 * event.values[i] + 0.9 * gravity[i]);
+                motion[i] = event.values[i] - gravity[i];
+            }
 
-        //计算重力在Y轴方向的量，即G*cos(α)
-        ratioY = gravity[1]/ SensorManager.GRAVITY_EARTH;
-        if(ratioY > 1.0)
-            ratioY = 1.0;
-        if(ratioY < -1.0)
-            ratioY = -1.0;
-        //获得α的值，根据z轴的方向修正其正负值。
-        angle = Math.toDegrees(Math.acos(ratioY));
-        if(gravity[2] < 0)
-            angle = - angle;
+            //计算重力在Y轴方向的量，即G*cos(α)
+            ratioY = gravity[1] / SensorManager.GRAVITY_EARTH;
+            if (ratioY > 1.0)
+                ratioY = 1.0;
+            if (ratioY < -1.0)
+                ratioY = -1.0;
+            //获得α的值，根据z轴的方向修正其正负值。
+            angle = Math.toDegrees(Math.acos(ratioY));
+            if (gravity[2] < 0)
+                angle = -angle;
 
-        //避免频繁扫屏，每10次变化显示一次值
-        Log.d("wanghp008", "onSensorChanged: counter ++ == " +counter +++"&&mBackUpTime = " +mBackUpTime+"&& % = " +counter ++ % mBackUpTime);
-        if(counter ++ % mBackUpTime == 0){
-            counter = 1;
-            Log.d("wanghp008", "onSensorChanged_counter == " +counter);
+            //避免频繁扫屏，每10次变化显示一次值
+            Log.d("wanghp008", "onSensorChanged_counter == " + counter);
+
+            if (counter++ < 30) {
+                return;
+            }
+            counter = 0;
             if ((event.values[0] > 0.1) || (event.values[1] > 0.1) || (event.values[2] > 0.1)
                     || (gravity[0] > 0.1) || (gravity[1] > 0.1) || (gravity[2] > 0.1)
-                    || (motion[0] > 0.1 ) || (motion[1] > 0.1) || (motion[2] > 0.1)) {
+                    || (motion[0] > 0.1) || (motion[1] > 0.1) || (motion[2] > 0.1)) {
                 if (mSlideSetting != null) {
-                    if (mLockScreenState == 2 && mBatteryStatus == 4){
-                        Log.d("wanghp007", "onSensorChanged: unTakePhotos");
+                    if (mLockScreenState == 2 && mBatteryStatus == 4) {
+                        Log.d("wanghp008", "onSensorChanged: unTakePhotos");
                         // do user operation
                     } else {
-                        Log.d("wanghp007", "onSensorChanged: TakePhotos");
-                        Log.d("wanghp007", "onSensorChanged: mSlideSetting.isPlayerPlaying():"+mSlideSetting.isPlayerPlaying());
+                        Log.d("wanghp008", "onSensorChanged: mSlideSetting.isPlayerPlaying():" + mSlideSetting.isPlayerPlaying() + "mCameramanager.ismSafeTakePhotos():" + mCameramanager.ismSafeTakePhotos());
                         if (!mSlideSetting.isPlayerPlaying() && mCameramanager.ismSafeTakePhotos()) {
-                            TakePhotosAsncTask();
+//                            TakePhotosAsncTask(3);
+                            mCameramanager.setmSafeTakePhotos(false);
+                            takeFrontPhoto2();
                             mSlideSetting.playEnhancementMusic(MainActivity.this);
                         }
                     }
@@ -481,24 +501,50 @@ public class MainActivity extends AppCompatActivity
                 }
             } else {
                 if (mShake) {
-                    mPeaceCount ++ ;
+                    mPeaceCount++;
                 }
             }
             if (mPeaceCount == 8) {
                 handler.removeCallbacks(task);
-                handler.post(task );
+                handler.post(task);
                 mPeaceCount = 0;
             }
         }
     }
 
-    private void TakePhotosAsncTask() {
-        new AsyncTask<Void,Void,Void>() {
+    int count = 0;
+
+    private void TakePhotosAsncTask(final int takeTimes) {
+        count = 0;
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                mCameramanager.setmSafeTakePhotos(false);
-                takeFrontPhoto2();
+
+                while (count <= takeTimes) {
+                    Log.d("wanghp007", "doInBackground: count == " + count);
+// 拍照
+                    mFrontCamera = mCameramanager.getCamera();
+                    if (mFrontCamera == null) {
+                        mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
+                    } else {
+                        try {
+                            if (count > 0) {
+                                mCameramanager.getCamera().startPreview();
+                            }
+                            mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
+                        } catch (RuntimeException e) {
+                            Log.d("wanghp007", "run: e = " + e);
+                            mCameramanager.setmSafeTakePhotos(true);
+                        }
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        count++;
+                    }
+                }
                 return null;
             }
         }.execute();
@@ -513,7 +559,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -528,7 +574,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void call(int powerStatus) {
         if (mBatteryStatus == BatteryManager.BATTERY_STATUS_NOT_CHARGING && mBatteryStatus
-                != -1){
+                != -1) {
             mPeaceCount = 0;
         }
 //        Toast.makeText(this,"status == " +powerStatus,Toast.LENGTH_SHORT).show();
@@ -538,7 +584,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * 自动对焦的回调方法，用来处理对焦成功/不成功后的事件
      */
-    private Camera.AutoFocusCallback mAutoFocus =  new Camera.AutoFocusCallback() {
+    private Camera.AutoFocusCallback mAutoFocus = new Camera.AutoFocusCallback() {
 
         @Override
         public void onAutoFocus(boolean success, Camera camera) {
