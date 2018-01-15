@@ -1,5 +1,6 @@
 package com.example.wanghanp.losephone;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,13 +43,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.wanghanp.base.UploadContract;
 import com.example.wanghanp.base.bean.TakePhotoBean;
+import com.example.wanghanp.losephone.Shake.contract.UploadImgPresenter;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.service.SaveStateService;
 import com.example.wanghanp.losephone.service.SlideSettings;
 import com.example.wanghanp.myview.ShowPhotosActivity;
 import com.example.wanghanp.myview.ZoomImageView;
+import com.example.wanghanp.permissioncheck.PermissionsActivity;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
 import com.example.wanghanp.util.MobileInfo;
@@ -63,7 +68,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener, SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener,
+        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener,UploadContract.UploadView {
 
     private SlideSettings mSlideSetting;
     private float[] gravity = new float[3];   //重力在设备x、y、z轴上的分量
@@ -105,6 +111,8 @@ public class MainActivity extends AppCompatActivity
     private int mScreenWidth;
     private int mTakeTime;
     private Sensor mLightSensor;
+    private UploadImgPresenter mUploadPresenter;
+    private boolean mRequiresCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,11 +141,11 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mSlideSetting = SlideSettings.getInstance(MainActivity.this);
-        initSensor();
-        initCamera();
-        initData();
-        initRecyclerView();
-        startService(new Intent(MainActivity.this, SaveStateService.class));
+
+        Intent intent = new Intent(MainActivity.this, PermissionsActivity.class);
+        intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ,Manifest.permission.READ_EXTERNAL_STORAGE});
+        ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
         //do
     }
 
@@ -200,6 +208,7 @@ public class MainActivity extends AppCompatActivity
      * 初始化数据
      */
     private void initData() {
+        mUploadPresenter = new UploadImgPresenter(this);
         mScreenWidth = MobileInfo.getInstance(MainActivity.this).getScreenWidth();
         mlist = new ArrayList<ImageView>();
         View view;
@@ -228,6 +237,21 @@ public class MainActivity extends AppCompatActivity
     public void removeMoreSuccessListener() {
         mPath = mCameramanager.getTakePhotosList();
         initTakePhotosAdpater(mPath);
+    }
+
+    @Override
+    public Context getContext() {
+        return null;
+    }
+
+    @Override
+    public void showInfo(String info) {
+
+    }
+
+    @Override
+    public ArrayList<String> getImageList() {
+        return null;
     }
 
 
@@ -365,8 +389,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        mHasFocus = true;
-        mCameramanager.setmSafeTakePhotos(true);
+        if (mRequiresCheck) {
+            mHasFocus = true;
+            mCameramanager.setmSafeTakePhotos(true);
+        }
     }
 
     @Override
@@ -429,14 +455,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSensorLisener.unRegisterPowerConnection();
-        mSensorManager.unregisterListener(this);
+        if (mRequiresCheck) {
+            mSensorLisener.unRegisterPowerConnection();
+            mSensorManager.unregisterListener(this);
 //        mSensorManager.unregisterListener(listener);
-        if (mSlideSetting != null) {
-            mSlideSetting.playWeakenMusic(MainActivity.this);
-        }
-        if (mScreenStateListener != null) {
-            mScreenStateListener.unregisterListener();
+            if (mSlideSetting != null) {
+                mSlideSetting.playWeakenMusic(MainActivity.this);
+            }
+            if (mScreenStateListener != null) {
+                mScreenStateListener.unregisterListener();
+            }
         }
         mCameramanager.ondestroy();
     }
@@ -504,7 +532,7 @@ public class MainActivity extends AppCompatActivity
                     mPeaceCount++;
                 }
             }
-            if (mPeaceCount == 8) {
+            if (mPeaceCount == 20) {
                 handler.removeCallbacks(task);
                 handler.post(task);
                 mPeaceCount = 0;
@@ -515,12 +543,11 @@ public class MainActivity extends AppCompatActivity
     int count = 0;
 
     private void TakePhotosAsncTask(final int takeTimes) {
-        count = 0;
         new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
-
+                count = 0;
                 while (count <= takeTimes) {
                     Log.d("wanghp007", "doInBackground: count == " + count);
 // 拍照
@@ -528,21 +555,29 @@ public class MainActivity extends AppCompatActivity
                     if (mFrontCamera == null) {
                         mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
                     } else {
-                        try {
-                            if (count > 0) {
-                                mCameramanager.getCamera().startPreview();
+                        if (count > 0) {
+                            try {
+                                mFrontCamera.startPreview();
+                            } catch (RuntimeException e) {
+                                Log.d("wanghp007", "run1: e = " + e);
+                                mCameramanager.setmSafeTakePhotos(true);
+                                mCameramanager.ondestroy();
+                                mFrontCamera = mCameramanager.getCamera();
+                                mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
                             }
-                            mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-                        } catch (RuntimeException e) {
-                            Log.d("wanghp007", "run: e = " + e);
-                            mCameramanager.setmSafeTakePhotos(true);
                         }
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                    }
+                    try {
+                        mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
+                    } catch (RuntimeException e) {
+                        Log.d("wanghp007", "run2: e = " + e);
+                        mCameramanager.setmSafeTakePhotos(true);
+                    }
+                    try {
+                        Thread.sleep(300);
                         count++;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
                 return null;
@@ -599,4 +634,18 @@ public class MainActivity extends AppCompatActivity
         }
         return super.onKeyDown(keyCode, event);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 102 && resultCode == PermissionsActivity.PERMISSIONS_GRANTED) {
+            mRequiresCheck = true;
+            initSensor();
+            initCamera();
+            initData();
+            initRecyclerView();
+            startService(new Intent(MainActivity.this, SaveStateService.class));
+        }
+    }
+
 }

@@ -68,6 +68,7 @@ public class CameraManager {
         } catch (RuntimeException e) {
             e.printStackTrace();
 //            Log.d("wanghp007", "openCamera: e == "+e);
+//            Log.d("wanghp007", "openCamera: e == "+e);
             return false;
         }
         // 开启前置失败
@@ -166,7 +167,7 @@ public class CameraManager {
         }
     }
 
-    private void savePhotos(final byte[] params) {
+    private synchronized void savePhotos(final byte[] params) {
         new AsyncTask<byte[], Void, File>() {
 
             @Override

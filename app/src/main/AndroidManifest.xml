@@ -32,6 +32,7 @@
             android:name="com.example.wanghanp.myview.ShowPhotosActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name="com.example.wanghanp.permissioncheck.PermissionsActivity"></activity>
         <service
             android:name=".service.SaveStateService"
             android:enabled="true"
