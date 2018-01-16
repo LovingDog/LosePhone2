@@ -60,6 +60,8 @@ import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
+import junit.framework.Assert;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +115,7 @@ public class MainActivity extends AppCompatActivity
     private Sensor mLightSensor;
     private UploadImgPresenter mUploadPresenter;
     private boolean mRequiresCheck;
+    public ArrayList<String> mList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +160,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initTakePhotosAdpater(List<TakePhotoBean> path) {
+
         mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this, R.layout.list_item_takephotos, path) {
             @Override
             protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
@@ -170,17 +174,24 @@ public class MainActivity extends AppCompatActivity
         };
         mTakePhotoRecyclerView.setAdapter(mCommonAdapter);
         mCommonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
+
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                ArrayList<String> list = new ArrayList<String>();
+                mList = new ArrayList<String>();
                 for (TakePhotoBean bean :
                         mPath) {
-                    list.add(bean.getPath());
+                    mList.add(bean.getPath());
                 }
                 startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
                         .putExtra(ShowPhotosActivity.LIST_INDEX, position)
-                        .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA, list));
+                        .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA, mList));
                 mCameramanager.setmSafeTakePhotos(false);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mUploadPresenter.upLoad();
+                    }
+                },3000);
             }
 
             @Override
@@ -251,7 +262,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public ArrayList<String> getImageList() {
-        return null;
+        if (mList == null) {
+            mList = new ArrayList<>();
+        }
+        return mList;
     }
 
 

@@ -2,12 +2,19 @@ package com.example.wanghanp.http;
 
 
 
-import com.squareup.okhttp.RequestBody;
 
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit.Call;
+import retrofit.http.GET;
+import retrofit.http.Multipart;
 import retrofit.http.POST;
+import retrofit.http.Part;
 import retrofit.http.PartMap;
+import retrofit.http.Url;
 import rx.Observable;
 
 /**
@@ -23,10 +30,13 @@ public interface APIService {
      */
 //    @POST("sendSMS.json?")
 //    Observable<UserHttpResult> senSMS(@Query("telphone") String telphone, @Query("type") int type);
+    @Multipart
+    @POST("fileUploadController/uploadFile")
+    Observable<UserHttpResult<TokenResult>> upLoadImg(@PartMap Map<String,RequestBody> hashMap);
+//    Observable<UserHttpResult<TokenResult>> upLoadImg( @Part("file\"; filename=\"image.png") RequestBody imgs);
 
-    @POST("Upload?")
-    Observable<UserHttpResult<TokenResult>> upLoadImg(@PartMap()Map<String,RequestBody> hashMap);
-
+    @GET("user/findAllUser")
+    Observable<UserHttpResult<TokenResult>> query();
 //    /**
 //     * 用户登录的接口
 //     *
