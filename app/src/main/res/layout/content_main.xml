@@ -22,7 +22,7 @@
         <RelativeLayout
             android:id="@+id/layout_banner"
             android:layout_width="match_parent"
-            android:layout_height="150dp">
+            android:layout_height="140dp">
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager"
@@ -58,6 +58,12 @@
 
         </RelativeLayout>
         <include layout="@layout/lay_takephotos"></include>
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+        </FrameLayout>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

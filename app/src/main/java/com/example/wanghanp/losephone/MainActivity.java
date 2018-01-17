@@ -1,8 +1,6 @@
 package com.example.wanghanp.losephone;
 
 import android.Manifest;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
@@ -17,37 +15,42 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.LocationSource;
 import com.bumptech.glide.Glide;
 import com.example.wanghanp.base.UploadContract;
 import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.Shake.contract.UploadImgPresenter;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.camera.CameraManager;
+import com.example.wanghanp.losephone.map.MapViewFragment;
 import com.example.wanghanp.losephone.service.SaveStateService;
 import com.example.wanghanp.losephone.service.SlideSettings;
 import com.example.wanghanp.myview.ShowPhotosActivity;
@@ -60,18 +63,19 @@ import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
 import com.zhy.adapter.recyclerview.base.ViewHolder;
 
-import junit.framework.Assert;
-
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener,
-        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener,UploadContract.UploadView {
+        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener,UploadContract.UploadView, AMapLocationListener,LocationSource {
 
     private SlideSettings mSlideSetting;
     private float[] gravity = new float[3];   //重力在设备x、y、z轴上的分量
@@ -107,8 +111,10 @@ public class MainActivity extends AppCompatActivity
     public LinearLayout mLinearLayout;
     @InjectView(R.id.recyclerview_takephotos)
     public RecyclerView mTakePhotoRecyclerView;
+    @InjectView(R.id.container)
+    FrameLayout mFrameLayout;
 
-    public int mSpanCount = 5;
+    public int mSpanCount = 10;
     private CommonAdapter<TakePhotoBean> mCommonAdapter;
     private int mScreenWidth;
     private int mTakeTime;
@@ -116,6 +122,9 @@ public class MainActivity extends AppCompatActivity
     private UploadImgPresenter mUploadPresenter;
     private boolean mRequiresCheck;
     public ArrayList<String> mList;
+    private boolean mCanTakePhoto;
+    private MapViewFragment mMapViewFragment;
+    private FragmentTransaction mFragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +161,25 @@ public class MainActivity extends AppCompatActivity
         //do
     }
 
+    @OnClick({R.id.lay_right})
+    public void onclick(View view) {
+        if (view.getId() == R.id.lay_right) {
+           startActivity(0);
+        }
+    }
+
+    private void startActivity(int position) {
+        mList = new ArrayList<String>();
+        for (TakePhotoBean bean :
+                mPath) {
+            mList.add(bean.getPath());
+        }
+        startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
+                .putExtra(ShowPhotosActivity.LIST_INDEX, position)
+                .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA, mList));
+        mCameramanager.setmSafeTakePhotos(false);
+    }
+
     private void initRecyclerView() {
         mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, mSpanCount));//设置为listview的布局
@@ -165,7 +193,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
                 ZoomImageView img = holder.getView(R.id.iv_takephotos);
-                img.setScaleType(ImageView.ScaleType.FIT_XY);
+                img.setScaleType(ImageView.ScaleType.CENTER_CROP );
                 img.setLayoutParams(new LinearLayout.LayoutParams(mScreenWidth / mSpanCount, mScreenWidth / mSpanCount));
                 Glide.with(mContext).load(takePhotoBean.getPath())
                         .override(mScreenWidth / mSpanCount, mScreenWidth / mSpanCount)
@@ -177,21 +205,13 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                mList = new ArrayList<String>();
-                for (TakePhotoBean bean :
-                        mPath) {
-                    mList.add(bean.getPath());
-                }
-                startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
-                        .putExtra(ShowPhotosActivity.LIST_INDEX, position)
-                        .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA, mList));
-                mCameramanager.setmSafeTakePhotos(false);
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mUploadPresenter.upLoad();
-                    }
-                },3000);
+                startActivity(position);
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mUploadPresenter.upLoad();
+//                    }
+//                },3000);
             }
 
             @Override
@@ -268,6 +288,16 @@ public class MainActivity extends AppCompatActivity
         return mList;
     }
 
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+
+    }
+
+    @Override
+    public void deactivate() {
+
+    }
+
 
     //实现VierPager监听器接口
     class BannerListener implements ViewPager.OnPageChangeListener {
@@ -298,6 +328,7 @@ public class MainActivity extends AppCompatActivity
         mCameramanager = new CameraManager(this, mFrontCamera, mSurfaceHolder, new CameraManager.TakePhotosListener() {
             @Override
             public void takePhotosSuccessListener(File file) {
+
                 Log.d("wanghp007", "takePhotosSuccessListener: file" + file.exists() + "path == " + file.getAbsolutePath());
                 if (mPath == null) {
                     mPath = new ArrayList<>();
@@ -305,25 +336,34 @@ public class MainActivity extends AppCompatActivity
                 TakePhotoBean takePhotoBean = new TakePhotoBean();
                 takePhotoBean.setPath(file.getAbsolutePath());
                 mPath.add(takePhotoBean);
-                if (mPath.size() > mSpanCount * 2) {
+                if (mPath.size() > mSpanCount ) {
                     mPath.remove(0);
                 }
                 initTakePhotosAdpater(mPath);
+                mCanTakePhoto = true;
             }
         });
         mCameramanager.setmRemoveMoreFileListener(this);
-        mPath = mCameramanager.getTakePhotosList();
+        mPath = new ArrayList<>();
+        ArrayList<TakePhotoBean> photos = mCameramanager.getTakePhotosList();
+        for (int i = photos.size() - 1; i >= 0; i--) {
+            String path = photos.get(i).getPath();
+            if (new File(path).exists()) {
+                mPath.add(photos.get(i));
+            }
+        }
         initTakePhotosAdpater(mPath);
     }
 
     private void takeFrontPhoto2() {
-        if (mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT) || mCameramanager.getCamera() != null) {
+        if (mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT)) {
             mFrontCamera = mCameramanager.getCamera();
             //自动对焦
             if (mHasFocus) {
                 try {
                     mFrontCamera.autoFocus(mAutoFocus);
                 } catch (RuntimeException e) {
+                    mCameramanager.ondestroy();
                     Log.d("wanghp007", "takeFrontPhoto2: e == " + e);
                 }
             }
@@ -480,7 +520,9 @@ public class MainActivity extends AppCompatActivity
                 mScreenStateListener.unregisterListener();
             }
         }
-        mCameramanager.ondestroy();
+        if (mCameramanager != null) {
+            mCameramanager.ondestroy();
+        }
     }
 
     @Override
@@ -494,7 +536,6 @@ public class MainActivity extends AppCompatActivity
         if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
         }
         if ((event.sensor.getType() == Sensor.TYPE_GYROSCOPE || event.sensor.getType() == Sensor.TYPE_ORIENTATION || event.sensor.getType() == Sensor.TYPE_GRAVITY)) {
-            Log.d("wanghp009", "TYPE_GYROSCOPE" + event.sensor.getType());
 //            showInfo("事件：" + " x:" + sensorEvent.values[0] + " y:" + sensorEvent.values[1]  + " z:" + sensorEvent.values[2]);
             for (int i = 0; i < 3; i++) {
         /* accelermeter是很敏感的，看之前小例子的log就知道。因为重力是恒力，我们移动设备，它的变化不会太快，不象摇晃手机这样的外力那样突然。因此通过low-pass filter对重力进行过滤。这个低通滤波器的权重，我们使用了0.1和0.9，当然也可以设置为0.2和0.8。 */
@@ -514,7 +555,6 @@ public class MainActivity extends AppCompatActivity
                 angle = -angle;
 
             //避免频繁扫屏，每10次变化显示一次值
-            Log.d("wanghp008", "onSensorChanged_counter == " + counter);
 
             if (counter++ < 30) {
                 return;
@@ -525,12 +565,10 @@ public class MainActivity extends AppCompatActivity
                     || (motion[0] > 0.1) || (motion[1] > 0.1) || (motion[2] > 0.1)) {
                 if (mSlideSetting != null) {
                     if (mLockScreenState == 2 && mBatteryStatus == 4) {
-                        Log.d("wanghp008", "onSensorChanged: unTakePhotos");
                         // do user operation
                     } else {
                         Log.d("wanghp008", "onSensorChanged: mSlideSetting.isPlayerPlaying():" + mSlideSetting.isPlayerPlaying() + "mCameramanager.ismSafeTakePhotos():" + mCameramanager.ismSafeTakePhotos());
                         if (!mSlideSetting.isPlayerPlaying() && mCameramanager.ismSafeTakePhotos()) {
-//                            TakePhotosAsncTask(3);
                             mCameramanager.setmSafeTakePhotos(false);
                             takeFrontPhoto2();
                             mSlideSetting.playEnhancementMusic(MainActivity.this);
@@ -546,7 +584,7 @@ public class MainActivity extends AppCompatActivity
                     mPeaceCount++;
                 }
             }
-            if (mPeaceCount == 20) {
+            if (mPeaceCount == 12) {
                 handler.removeCallbacks(task);
                 handler.post(task);
                 mPeaceCount = 0;
@@ -557,39 +595,36 @@ public class MainActivity extends AppCompatActivity
     int count = 0;
 
     private void TakePhotosAsncTask(final int takeTimes) {
+        mCanTakePhoto = true;
         new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
                 count = 0;
+                int time = 500;
                 while (count <= takeTimes) {
-                    Log.d("wanghp007", "doInBackground: count == " + count);
-// 拍照
-                    mFrontCamera = mCameramanager.getCamera();
-                    if (mFrontCamera == null) {
-                        mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
-                    } else {
-                        if (count > 0) {
-                            try {
-                                mFrontCamera.startPreview();
-                            } catch (RuntimeException e) {
-                                Log.d("wanghp007", "run1: e = " + e);
-                                mCameramanager.setmSafeTakePhotos(true);
-                                mCameramanager.ondestroy();
-                                mFrontCamera = mCameramanager.getCamera();
-                                mCameramanager.openCamera(Camera.CameraInfo.CAMERA_FACING_FRONT);
-                            }
-                        }
-                    }
-                    try {
-                        mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
-                    } catch (RuntimeException e) {
-                        Log.d("wanghp007", "run2: e = " + e);
+                    if (count == takeTimes && mCameramanager != null) {
+                        mCameramanager.ondestroy();
                         mCameramanager.setmSafeTakePhotos(true);
+                        count = 0;
+                        break;
+                    }
+                    if (mCanTakePhoto) {
+                        try {
+                            mFrontCamera.startPreview();
+                            mFrontCamera.takePicture(null, null, mCameramanager.new PicCallback(mFrontCamera));
+                        } catch (RuntimeException e) {
+                            Log.d("wanghp007", "run2: e = " + e);
+                        }
+//
+                        mCanTakePhoto = false;
+                        count++;
+                        time = 100;
+                    } else {
+                        time = 3000;
                     }
                     try {
-                        Thread.sleep(300);
-                        count++;
+                        Thread.sleep(time);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -638,6 +673,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onAutoFocus(boolean success, Camera camera) {
             //TODO:空实现
+            Log.d("wanghp007", "onAutoFocus:success = " +success );
         }
     };
 
@@ -658,8 +694,37 @@ public class MainActivity extends AppCompatActivity
             initCamera();
             initData();
             initRecyclerView();
+            initFragment();
             startService(new Intent(MainActivity.this, SaveStateService.class));
         }
     }
 
+    private void initFragment() {
+        mMapViewFragment = new MapViewFragment();
+        mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+        mFragmentTransaction.add(R.id.container,mMapViewFragment);
+        mFragmentTransaction.commit();
+    }
+    @Override
+    public void onLocationChanged(AMapLocation amapLocation) {
+        Log.d("wanghp009", "onLocationChanged: ");
+        if (amapLocation != null) {
+            if (amapLocation.getErrorCode() == 0) {
+                //定位成功回调信息，设置相关消息
+                Log.d("wanghp009", "onLocationChanged: "+amapLocation.getLatitude());
+                amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
+                amapLocation.getLatitude();//获取纬度
+                amapLocation.getLongitude();//获取经度
+                amapLocation.getAccuracy();//获取精度信息
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date date = new Date(amapLocation.getTime());
+                df.format(date);//定位时间
+            } else {
+                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
+                Log.d("AmapError","location Error, ErrCode:"
+                        + amapLocation.getErrorCode() + ", errInfo:"
+                        + amapLocation.getErrorInfo());
+            }
+        }
+    }
 }
