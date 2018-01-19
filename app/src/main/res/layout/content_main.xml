@@ -11,18 +11,130 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:layout_editor_absoluteY="0dp"
-        tools:layout_editor_absoluteX="8dp">
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorPrimary"
+                android:text="防盗模式开启" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="15dp"
+                android:gravity="right|center_vertical">
+
+                <Button
+                    android:id="@+id/bt_save"
+                    android:layout_width="40dp"
+                    android:layout_height="25dp"
+                    android:background="@mipmap/offline_diagnose_unable"></Button>
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimary"
+            android:layout_height="3dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/colorPrimary"
+                android:text="防盗音乐开启" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="15dp"
+                android:gravity="right|center_vertical">
+
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="25dp"
+                    android:background="@mipmap/offline_diagnose_enable"></Button>
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimary"
+            android:layout_height="3dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:textColor="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:text="充电自动打开" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="15dp"
+                android:gravity="right|center_vertical">
+
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="25dp"
+                    android:background="@mipmap/offline_diagnose_enable"></Button>
+            </LinearLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimary"
+            android:layout_height="3dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:textColor="@color/colorPrimary"
+                android:gravity="center_vertical"
+                android:text="地点提醒模式" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="15dp"
+                android:gravity="right|center_vertical">
+
+                <Button
+                    android:layout_width="40dp"
+                    android:layout_height="25dp"
+                    android:background="@mipmap/offline_diagnose_enable"></Button>
+            </LinearLayout>
+        </LinearLayout>
         <SurfaceView
             android:id="@+id/back_surfaceview"
             android:layout_width="1dp"
-            android:layout_height="1dp"/>
+            android:layout_height="1dp" />
+
         <RelativeLayout
             android:id="@+id/layout_banner"
             android:layout_width="match_parent"
-            android:layout_height="140dp">
+            android:layout_height="140dp"
+            android:visibility="gone">
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager"
@@ -45,8 +157,8 @@
                     android:alpha="0.6"
                     android:background="@drawable/corner_banner_tip"
                     android:padding="5dp"
-                    android:textColor="@color/white"
-                    android:text="抚平心灵皱纹，永驻清楚" />
+                    android:text="抚平心灵皱纹，永驻清楚"
+                    android:textColor="@color/white" />
 
                 <LinearLayout
                     android:id="@+id/points"
@@ -57,7 +169,9 @@
             </LinearLayout>
 
         </RelativeLayout>
+
         <include layout="@layout/lay_takephotos"></include>
+
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"

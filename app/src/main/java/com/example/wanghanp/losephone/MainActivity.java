@@ -36,6 +36,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -113,6 +114,9 @@ public class MainActivity extends AppCompatActivity
     public RecyclerView mTakePhotoRecyclerView;
     @InjectView(R.id.container)
     FrameLayout mFrameLayout;
+    @InjectView(R.id.bt_save)
+    Button mSaveBt;
+    private boolean mShowSafeBt = false;
 
     public int mSpanCount = 10;
     private CommonAdapter<TakePhotoBean> mCommonAdapter;
@@ -133,6 +137,7 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.inject(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mCameraView = (SurfaceView) findViewById(R.id.back_surfaceview);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         initBroadCast();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -158,13 +163,21 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ,Manifest.permission.READ_EXTERNAL_STORAGE});
         ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
+        mScreenWidth = MobileInfo.getInstance(this).getScreenWidth();
         //do
     }
 
-    @OnClick({R.id.lay_right})
+    @OnClick({R.id.lay_right,R.id.bt_save})
     public void onclick(View view) {
         if (view.getId() == R.id.lay_right) {
            startActivity(0);
+        }else if (view.getId() == R.id.bt_save) {
+            if (mShowSafeBt) {
+                mSaveBt.setBackgroundResource(R.mipmap.offline_diagnose_unable);
+            } else {
+                mSaveBt.setBackgroundResource(R.mipmap.offline_diagnose_enable);
+            }
+            mShowSafeBt = !mShowSafeBt;
         }
     }
 
@@ -221,49 +234,6 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    // 广告图素材
-    private int[] bannerImages = {R.mipmap.image1, R.mipmap.image2, R.mipmap.image3, R.mipmap.image1};
-    // 广告语
-    private String[] bannerTexts = {"心静则平", "莫道桑榆晚，微霞尚满天", "心平则智", "一切美好的东西，都以秒计算"};
-
-    // ViewPager适配器与监听器
-    private BannerAdapter mAdapter;
-    private BannerListener bannerListener;
-
-    // 圆圈标志位
-    private int pointIndex = 0;
-    // 线程标志
-    private boolean isStop = false;
-
-    /**
-     * 初始化数据
-     */
-    private void initData() {
-        mUploadPresenter = new UploadImgPresenter(this);
-        mScreenWidth = MobileInfo.getInstance(MainActivity.this).getScreenWidth();
-        mlist = new ArrayList<ImageView>();
-        View view;
-        LinearLayout.LayoutParams params;
-        for (int i = 0; i < bannerImages.length; i++) {
-            // 设置广告图
-            ImageView imageView = new ImageView(this);
-            imageView.setBackgroundResource(bannerImages[i]);
-            mlist.add(imageView);
-            // 设置圆圈点
-            view = new View(this);
-            params = new LinearLayout.LayoutParams(5, 5);
-            params.leftMargin = 10;
-            view.setBackgroundResource(R.drawable.banner_circle_unchecked);
-            view.setLayoutParams(params);
-            view.setEnabled(false);
-            mLinearLayout.addView(view);
-        }
-        mAdapter = new BannerAdapter(mlist);
-        bannerListener = new BannerListener();
-        mViewPager.setAdapter(mAdapter);
-        mViewPager.setOnPageChangeListener(bannerListener);
-    }
-
     @Override
     public void removeMoreSuccessListener() {
         mPath = mCameramanager.getTakePhotosList();
@@ -299,29 +269,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    //实现VierPager监听器接口
-    class BannerListener implements ViewPager.OnPageChangeListener {
-
-        @Override
-        public void onPageScrollStateChanged(int arg0) {
-        }
-
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            int newPosition = position % bannerImages.length;
-            mTextView.setText(bannerTexts[newPosition]);
-            mLinearLayout.getChildAt(newPosition).setEnabled(true);
-            mLinearLayout.getChildAt(pointIndex).setEnabled(false);
-            // 更新标志位
-            pointIndex = newPosition;
-        }
-
-    }
-
     private void initCamera() {
         mSurfaceHolder = mCameraView.getHolder();
 
@@ -353,6 +300,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         initTakePhotosAdpater(mPath);
+        initFragment();
     }
 
     private void takeFrontPhoto2() {
@@ -533,6 +481,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (!mShowSafeBt) {
+            return;
+        }
         if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
         }
         if ((event.sensor.getType() == Sensor.TYPE_GYROSCOPE || event.sensor.getType() == Sensor.TYPE_ORIENTATION || event.sensor.getType() == Sensor.TYPE_GRAVITY)) {
@@ -692,15 +643,13 @@ public class MainActivity extends AppCompatActivity
             mRequiresCheck = true;
             initSensor();
             initCamera();
-            initData();
             initRecyclerView();
-            initFragment();
             startService(new Intent(MainActivity.this, SaveStateService.class));
         }
     }
 
     private void initFragment() {
-        mMapViewFragment = new MapViewFragment();
+        mMapViewFragment = MapViewFragment.getInstance(mPath.get(0).getPath());
         mFragmentTransaction = getSupportFragmentManager().beginTransaction();
         mFragmentTransaction.add(R.id.container,mMapViewFragment);
         mFragmentTransaction.commit();

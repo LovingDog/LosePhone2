@@ -241,7 +241,7 @@ public class CameraManager {
                 while (true) {
                     if (mPictureFile.exists() && mPictureFile.isDirectory()) {
                         File[] photosList = mPictureFile.listFiles();
-                        if (photosList.length > 10) {
+                        if (photosList.length > 30) {
                             try {
                                 Thread.sleep(30);
                             } catch (InterruptedException e) {
