@@ -1,10 +1,12 @@
 package com.example.wanghanp.base.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by wanghanping on 2018/1/4.
  */
 
-public class TakePhotoBean {
+public class TakePhotoBean implements Serializable {
     private String path;
     private boolean delete;
     private String time;

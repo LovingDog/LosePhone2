@@ -54,6 +54,8 @@ import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.map.MapViewFragment;
 import com.example.wanghanp.losephone.service.SaveStateService;
 import com.example.wanghanp.losephone.service.SlideSettings;
+import com.example.wanghanp.losephone.tabview.SettingFragment;
+import com.example.wanghanp.losephone.tabview.ShowFunFragment;
 import com.example.wanghanp.myview.ShowPhotosActivity;
 import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.permissioncheck.PermissionsActivity;
@@ -87,11 +89,9 @@ public class MainActivity extends AppCompatActivity
     private SensorManager mSensorManager;
     private Sensor mSensor;
 
-    private int mBackUpTime = 50;
     private boolean mShake = false;
     private int mLockScreenState;
     private int mBatteryStatus = -1;
-    private int mLocakScreenOriState;
     private SensorListener mSensorLisener;
     private int mPeaceCount;
     private ScreenListener mScreenStateListener;
@@ -102,33 +102,24 @@ public class MainActivity extends AppCompatActivity
     private CameraManager mCameramanager;
     private boolean mHasFocus = true;
     private List<TakePhotoBean> mPath;
-
-    @InjectView(R.id.viewpager)
-    public ViewPager mViewPager;
-    public List<ImageView> mlist;
-    @InjectView(R.id.tv_bannertext)
-    public TextView mTextView;
-    @InjectView(R.id.points)
-    public LinearLayout mLinearLayout;
-    @InjectView(R.id.recyclerview_takephotos)
-    public RecyclerView mTakePhotoRecyclerView;
-    @InjectView(R.id.container)
-    FrameLayout mFrameLayout;
-    @InjectView(R.id.bt_save)
-    Button mSaveBt;
-    private boolean mShowSafeBt = false;
-
-    public int mSpanCount = 10;
-    private CommonAdapter<TakePhotoBean> mCommonAdapter;
-    private int mScreenWidth;
-    private int mTakeTime;
-    private Sensor mLightSensor;
-    private UploadImgPresenter mUploadPresenter;
-    private boolean mRequiresCheck;
     public ArrayList<String> mList;
+    @InjectView(R.id.footer_rb_mine)
+    TextView footer_mine;
+    @InjectView(R.id.footer_rb_msg)
+    TextView footer_msg;
+//    @InjectView(R.id.container)
+//    FrameLayout mFrameLayout;
+    private boolean mShowSafeBt = false;
+    private boolean mRequiresCheck;
+    
     private boolean mCanTakePhoto;
     private MapViewFragment mMapViewFragment;
     private FragmentTransaction mFragmentTransaction;
+    private int mBackUpTime = 50;
+    private int mLocakScreenOriState;
+    private int mSpanCount = 10;
+    private ShowFunFragment mShowFunFragment;
+    private SettingFragment mSettingFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,81 +154,77 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ,Manifest.permission.READ_EXTERNAL_STORAGE});
         ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
-        mScreenWidth = MobileInfo.getInstance(this).getScreenWidth();
         //do
     }
 
-    @OnClick({R.id.lay_right,R.id.bt_save})
-    public void onclick(View view) {
-        if (view.getId() == R.id.lay_right) {
-           startActivity(0);
-        }else if (view.getId() == R.id.bt_save) {
-            if (mShowSafeBt) {
-                mSaveBt.setBackgroundResource(R.mipmap.offline_diagnose_unable);
-            } else {
-                mSaveBt.setBackgroundResource(R.mipmap.offline_diagnose_enable);
-            }
-            mShowSafeBt = !mShowSafeBt;
+    private void initFragment2() {
+        //开启事务，fragment的控制是由事务来实现的
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        //第一种方式（add），初始化fragment并添加到事务中，如果为null就new一个
+        if (mShowFunFragment == null) {
+            mShowFunFragment = ShowFunFragment.newInstance(mPath,"");
+            transaction.add(R.id.content, mShowFunFragment);
+        }
+        //隐藏所有fragment
+        hideFragment(transaction);
+        //显示需要显示的fragment
+        transaction.show(mShowFunFragment);
+        //提交事务
+        transaction.commit();
+    }
+    private void initFragment3() {
+        //开启事务，fragment的控制是由事务来实现的
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        //第一种方式（add），初始化fragment并添加到事务中，如果为null就new一个
+        if (mSettingFragment == null) {
+            mSettingFragment = new SettingFragment();
+            transaction.add(R.id.content, mSettingFragment);
+        }
+        //隐藏所有fragment
+        hideFragment(transaction);
+        //显示需要显示的fragment
+        transaction.show(mSettingFragment);
+        //提交事务
+        transaction.commit();
+    }
+    //隐藏所有的fragment
+    private void hideFragment(FragmentTransaction transaction){
+
+        if(mShowFunFragment != null){
+            transaction.hide(mShowFunFragment);
+        }
+        if(mSettingFragment !=null){
+            transaction.hide(mSettingFragment);
         }
     }
-
-    private void startActivity(int position) {
-        mList = new ArrayList<String>();
-        for (TakePhotoBean bean :
-                mPath) {
-            mList.add(bean.getPath());
+    @OnClick({ R.id.footer_rb_msg, R.id.footer_rb_mine})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.footer_rb_msg:
+//                footer_msg.setSelected(true);
+//                footer_mine.setSelected(false);
+                initFragment2();
+                break;
+            case R.id.footer_rb_mine:
+//                footer_msg.setSelected(false);
+//                footer_mine.setSelected(true);
+                initFragment3();
+                break;
         }
-        startActivity(new Intent(MainActivity.this, ShowPhotosActivity.class)
-                .putExtra(ShowPhotosActivity.LIST_INDEX, position)
-                .putStringArrayListExtra(ShowPhotosActivity.LIST_EXTRA, mList));
-        mCameramanager.setmSafeTakePhotos(false);
-    }
-
-    private void initRecyclerView() {
-        mTakePhotoRecyclerView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mTakePhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, mSpanCount));//设置为listview的布局
-        mTakePhotoRecyclerView.setItemAnimator(new DefaultItemAnimator());//设置动画
-//        mTakePhotoRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));//添加分割线
-    }
-
-    private void initTakePhotosAdpater(List<TakePhotoBean> path) {
-
-        mCommonAdapter = new CommonAdapter<TakePhotoBean>(MainActivity.this, R.layout.list_item_takephotos, path) {
-            @Override
-            protected void convert(ViewHolder holder, TakePhotoBean takePhotoBean, int position) {
-                ZoomImageView img = holder.getView(R.id.iv_takephotos);
-                img.setScaleType(ImageView.ScaleType.CENTER_CROP );
-                img.setLayoutParams(new LinearLayout.LayoutParams(mScreenWidth / mSpanCount, mScreenWidth / mSpanCount));
-                Glide.with(mContext).load(takePhotoBean.getPath())
-                        .override(mScreenWidth / mSpanCount, mScreenWidth / mSpanCount)
-                        .into(img);
-            }
-        };
-        mTakePhotoRecyclerView.setAdapter(mCommonAdapter);
-        mCommonAdapter.setOnItemClickListener(new MultiItemTypeAdapter.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-                startActivity(position);
-//                handler.postDelayed(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        mUploadPresenter.upLoad();
-//                    }
-//                },3000);
-            }
-
-            @Override
-            public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
-                return false;
-            }
-        });
     }
 
     @Override
     public void removeMoreSuccessListener() {
         mPath = mCameramanager.getTakePhotosList();
         initTakePhotosAdpater(mPath);
+    }
+
+    private void initTakePhotosAdpater(List<TakePhotoBean> mPath) {
+        if (mShowFunFragment != null && mShowFunFragment.isAdded() && mPath.size() > 0) {
+            mShowFunFragment.initTakePhotosAdpater(mPath);
+        }
     }
 
     @Override
@@ -300,7 +287,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         initTakePhotosAdpater(mPath);
-        initFragment();
+        initFragment2();
     }
 
     private void takeFrontPhoto2() {
@@ -643,7 +630,6 @@ public class MainActivity extends AppCompatActivity
             mRequiresCheck = true;
             initSensor();
             initCamera();
-            initRecyclerView();
             startService(new Intent(MainActivity.this, SaveStateService.class));
         }
     }
