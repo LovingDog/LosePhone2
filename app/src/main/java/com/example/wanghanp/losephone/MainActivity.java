@@ -1,8 +1,11 @@
 package com.example.wanghanp.losephone;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -41,6 +44,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     private int mSpanCount = 10;
     private ShowFunFragment mShowFunFragment;
     private SettingFragment mSettingFragment;
+    private boolean mIsServiceRunning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +160,13 @@ public class MainActivity extends AppCompatActivity
                 ,Manifest.permission.READ_EXTERNAL_STORAGE});
         ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
         //do
+        registerTimeBroadCast();
+    }
+
+    private void registerTimeBroadCast() {
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        MyTimeTickBroaCast myTimeTickBroadCast = new MyTimeTickBroaCast();
+        getApplicationContext().registerReceiver(myTimeTickBroadCast,intentFilter);
     }
 
     private void initFragment2() {
@@ -339,6 +351,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d("wanghp007", "onScreenOn: ");
                 mLockScreenState = 0;
                 mBackUpTime = 10;
+                keepLive();
             }
 
             @Override
@@ -445,14 +458,18 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
         if (mRequiresCheck) {
-            mSensorLisener.unRegisterPowerConnection();
-            mSensorManager.unregisterListener(this);
+            try {
+                mSensorLisener.unRegisterPowerConnection();
+                mSensorManager.unregisterListener(this);
 //        mSensorManager.unregisterListener(listener);
-            if (mSlideSetting != null) {
-                mSlideSetting.playWeakenMusic(MainActivity.this);
-            }
-            if (mScreenStateListener != null) {
-                mScreenStateListener.unregisterListener();
+                if (mSlideSetting != null) {
+                    mSlideSetting.playWeakenMusic(MainActivity.this);
+                }
+                if (mScreenStateListener != null) {
+                    mScreenStateListener.unregisterListener();
+                }
+            } catch (IllegalArgumentException e) {
+                // ignore
             }
         }
         if (mCameramanager != null) {
@@ -468,6 +485,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Log.d("wanghp008", "onSensorChanged: ");
         if (!mShowSafeBt) {
             return;
         }
@@ -634,12 +652,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void initFragment() {
-        mMapViewFragment = MapViewFragment.getInstance(mPath.get(0).getPath());
-        mFragmentTransaction = getSupportFragmentManager().beginTransaction();
-        mFragmentTransaction.add(R.id.container,mMapViewFragment);
-        mFragmentTransaction.commit();
-    }
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
         Log.d("wanghp009", "onLocationChanged: ");
@@ -659,6 +671,35 @@ public class MainActivity extends AppCompatActivity
                 Log.d("AmapError","location Error, ErrCode:"
                         + amapLocation.getErrorCode() + ", errInfo:"
                         + amapLocation.getErrorInfo());
+            }
+        }
+    }
+
+    private class MyTimeTickBroaCast extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction() == Intent.ACTION_TIME_TICK) {
+                Log.d("wanghp007", "Intent.ACTION_TIME_TICK " );
+                keepLive();
+            }
+        }
+    }
+
+    private void keepLive() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> lists = activityManager.getRunningServices(Integer.MAX_VALUE);
+        for (ActivityManager.RunningServiceInfo runningService:
+                lists) {
+            if (runningService.service.getClassName().equals("com.example.wanghanp.losephone.service.SaveStateService")) {
+                Toast.makeText(getApplicationContext(),"Time_tick",Toast.LENGTH_SHORT).show();
+                mIsServiceRunning = true;
+            } else {
+                mIsServiceRunning = false;
+            }
+            Log.d("wanghp007", "onReceive: mIsServiceRunning = " +mIsServiceRunning);
+            if (!mIsServiceRunning) {
+                startService(new Intent(MainActivity.this, SaveStateService.class));
             }
         }
     }

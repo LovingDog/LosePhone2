@@ -1,11 +1,13 @@
 package com.example.wanghanp.losephone.map;
 
+import android.content.DialogInterface;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,8 @@ import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.losephone.MainActivity;
 import com.example.wanghanp.losephone.R;
 import com.example.wanghanp.losephone.service.SlideSettings;
+import com.example.wanghanp.permissioncheck.PermissionsActivity;
+import com.example.wanghanp.util.CommonUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,6 +76,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     private double mHomeLastLat;
     private double mHomeLastLong;
     private SlideSettings mSlideSetting;
+    private boolean mRemindLater = true;
 
     public static final MapViewFragment getInstance(String path){
         MapViewFragment mapviewFragment = new MapViewFragment();
@@ -182,6 +187,9 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mSlideSetting != null) {
+            mSlideSetting.playWeakenMusic(getActivity());
+        }
     }
 
     @Override
@@ -219,12 +227,44 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 mLastLat = aMapLocation.getLatitude();
                 mLastLong = aMapLocation.getLongitude();
                 float homeDistance = AMapUtils.calculateLineDistance(new LatLng(mHomeLastLat,mHomeLastLong),new LatLng(lat,longitude));
-                if (homeDistance < 1000) {
-                    mSlideSetting.playEnhancementMusic(getActivity());
+                if (homeDistance < 100 && mRemindLater) {
+                    if (!mSlideSetting.isPlayerPlaying()) {
+                        showMissingPermissionDialog();
+                        mSlideSetting.playEnhancementMusic(getActivity());
+                        mRemindLater = false;
+                    }
+                } else if (homeDistance > 1000 * 3) {
+                    if (mSlideSetting.isPlayerPlaying()) {
+                        mSlideSetting.playWeakenMusic(getActivity());
+                    }
                 }
             }
         }
     }
+    private void showMissingPermissionDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        dialogBuilder.setTitle("提醒");
+        dialogBuilder.setMessage("主人，你已到家，请关注下");
+        dialogBuilder.setNegativeButton("等下再提醒", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mRemindLater = true;
+            }
+        });
+        dialogBuilder.setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mRemindLater = false;
+                if (CommonUtil.isWeixinAvilible(getActivity())) {
+                    CommonUtil.startWeChatAc(getActivity());
+                    mlocationClient.stopLocation();
+                }
+            }
+        });
+        dialogBuilder.setCancelable(false);
+        dialogBuilder.show();
+    }
+
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {
         mListener = onLocationChangedListener;

@@ -53,6 +53,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name="com.example.wanghanp.permissioncheck.PermissionsActivity"></activity>
+        <activity android:name="com.tencent.mm.ui.LauncherUI"></activity>
         <service
             android:name=".service.SaveStateService"
             android:enabled="true"
