@@ -215,8 +215,8 @@ public class SlideSettings {
 //        }
 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0.3f, 0.8f);
+        mediaPlayer.setLooping(false);
+        mediaPlayer.setVolume(0.3f, 0.6f);
         try {
             mediaPlayer.prepare();
         } catch (IllegalStateException e) {

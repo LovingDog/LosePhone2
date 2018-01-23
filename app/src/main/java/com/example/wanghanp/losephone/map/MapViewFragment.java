@@ -1,6 +1,9 @@
 package com.example.wanghanp.losephone.map;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -96,18 +99,20 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_mapview,null);
+        View view = inflater.inflate(R.layout.fragment_mapview, container, false);
         mMapView = view.findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mAmap = mMapView.getMap();
-        initAmap();
-        initLocation();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                searchName("雨花台区梅山街道梅清苑2号门","025");
-            }
-        },1000);
+        if (mAmap != null) {
+            initAmap();
+            initLocation();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    searchName("雨花台区梅山街道梅清苑2号门","025");
+                }
+            },1000);
+        }
         return view;
     }
 
@@ -124,7 +129,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                     R.color.accent_material_light));
             myLocationStyle.radiusFillColor(getResources().getColor(R.color.colorPrimary));
         }
-        myLocationStyle.strokeWidth(1.3f);
+        myLocationStyle.strokeWidth(0.3f);
         myLocationStyle.showMyLocation(false);
 
         mAmap.setMyLocationStyle(myLocationStyle);
@@ -137,7 +142,6 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
 
     private void searchName(String name,String cityCode) {
         GeocodeQuery query = new GeocodeQuery(name, "025");
-
         mGeocoderSearch.getFromLocationNameAsyn(query);
     }
 
@@ -163,13 +167,13 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
          * 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
          */
         mLocationOption.setOnceLocation(false);
-//        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
-//        if (null != mlocationClient) {
+        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
+        if (null != mlocationClient) {
             mlocationClient.setLocationOption(mLocationOption);
         //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
-//            mlocationClient.stopLocation();
+            mlocationClient.stopLocation();
             mlocationClient.startLocation();
-//        }
+        }
     }
 
     @Override
@@ -227,7 +231,9 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 mLastLat = aMapLocation.getLatitude();
                 mLastLong = aMapLocation.getLongitude();
                 float homeDistance = AMapUtils.calculateLineDistance(new LatLng(mHomeLastLat,mHomeLastLong),new LatLng(lat,longitude));
-                if (homeDistance < 100 && mRemindLater) {
+                //homeDistance < 600 &&
+                if (homeDistance < 600 && mRemindLater) {
+                    CommonUtil.simpleNotify(getActivity(), "到家提醒", "消息提醒", "你已到家附近，请查看消息", "losePhone");
                     if (!mSlideSetting.isPlayerPlaying()) {
                         showMissingPermissionDialog();
                         mSlideSetting.playEnhancementMusic(getActivity());
@@ -249,6 +255,9 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mRemindLater = true;
+                if (mSlideSetting != null) {
+                    mSlideSetting.playWeakenMusic(getActivity());
+                }
             }
         });
         dialogBuilder.setPositiveButton("知道了", new DialogInterface.OnClickListener() {
@@ -258,12 +267,17 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 if (CommonUtil.isWeixinAvilible(getActivity())) {
                     CommonUtil.startWeChatAc(getActivity());
                     mlocationClient.stopLocation();
+                    if (mSlideSetting != null) {
+                        mSlideSetting.playWeakenMusic(getActivity());
+                    }
                 }
             }
         });
         dialogBuilder.setCancelable(false);
         dialogBuilder.show();
     }
+
+
 
     @Override
     public void activate(OnLocationChangedListener onLocationChangedListener) {

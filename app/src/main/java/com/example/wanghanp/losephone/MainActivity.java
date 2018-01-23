@@ -157,10 +157,11 @@ public class MainActivity extends AppCompatActivity
 
         Intent intent = new Intent(MainActivity.this, PermissionsActivity.class);
         intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ,Manifest.permission.READ_EXTERNAL_STORAGE});
+                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION});
         ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
         //do
         registerTimeBroadCast();
+        startService(new Intent(MainActivity.this, SaveStateService.class));
     }
 
     private void registerTimeBroadCast() {
@@ -648,7 +649,6 @@ public class MainActivity extends AppCompatActivity
             mRequiresCheck = true;
             initSensor();
             initCamera();
-            startService(new Intent(MainActivity.this, SaveStateService.class));
         }
     }
 
@@ -692,12 +692,12 @@ public class MainActivity extends AppCompatActivity
         for (ActivityManager.RunningServiceInfo runningService:
                 lists) {
             if (runningService.service.getClassName().equals("com.example.wanghanp.losephone.service.SaveStateService")) {
-                Toast.makeText(getApplicationContext(),"Time_tick",Toast.LENGTH_SHORT).show();
                 mIsServiceRunning = true;
             } else {
                 mIsServiceRunning = false;
             }
-            Log.d("wanghp007", "onReceive: mIsServiceRunning = " +mIsServiceRunning);
+//            Log.d("wanghp007", "onReceive: mIsServiceRunning = " +mIsServiceRunning);
+//            Toast.makeText(getApplicationContext(),"Time_tick_mIsServiceRunning:"+mIsServiceRunning,Toast.LENGTH_SHORT).show();
             if (!mIsServiceRunning) {
                 startService(new Intent(MainActivity.this, SaveStateService.class));
             }
