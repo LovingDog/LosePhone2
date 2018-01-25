@@ -4,13 +4,32 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
+import com.amap.api.services.help.Tip;
 import com.example.wanghanp.losephone.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 
 /**
@@ -30,6 +49,31 @@ public class SettingFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    @InjectView(R.id.bt_safe)
+    Button mSafe;
+    @InjectView(R.id.bt_music)
+    Button mMusic;
+    @InjectView(R.id.bt_electric)
+    Button mElectic;
+    @InjectView(R.id.bt_map)
+    Button mMap;
+    @InjectView(R.id.autotext_search)
+    EditText mAutoCompleteTextView;
+    @InjectView(R.id.lay_search)
+    RelativeLayout mSearchLay;
+    @InjectView(R.id.listview)
+    ListView mListView;
+    @InjectView(R.id.edit_content)
+    EditText mContent;
+
+    private boolean mSafeEnable = false;
+    private boolean mMusicEnable = true;
+    private boolean mElectricEnable = true;
+    private boolean mMapEnable = true;
+    private ArrayList<String> mSearchReulst;
+    private ArrayAdapter<String> mAdapter;
+    private List<Tip> mTipList;
 
 
     public SettingFragment() {
@@ -69,7 +113,123 @@ public class SettingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
         ButterKnife.inject(this, view);
+        mSearchReulst = new ArrayList<>();
+        initTextChangeListener();
+        initCompleteText(mSearchReulst);
         return view;
+    }
+
+    private void initCompleteText(final ArrayList<String> mSearchReulst) {
+
+        mAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,mSearchReulst);
+        mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String name = mSearchReulst.get(i).toString();
+                if (!name.equals(mAutoCompleteTextView.getText().toString())) {
+                    mAutoCompleteTextView.setText(mSearchReulst.get(i).toString());
+                }
+                mListView.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void doSearch(String city) {
+        InputtipsQuery inputquery = new InputtipsQuery(city, "");
+        inputquery.setCityLimit(true);//限制在当前城市
+
+        Inputtips inputTips = new Inputtips(getActivity().getApplicationContext(), inputquery);
+        inputTips.setInputtipsListener(new Inputtips.InputtipsListener() {
+            @Override
+            public void onGetInputtips(List<Tip> list, int i) {
+                Log.d("wanghp007", "onGetInputtips: list.size() = " +list.size());
+                mTipList = list;
+                mSearchReulst.clear();
+                for (int j = 0; j < list.size(); j++) {
+                    Tip tip = list.get(j);
+                    mSearchReulst.add(tip.getDistrict()+tip.getName());
+                }
+                if (mAdapter != null) {
+//                    initCompleteText(mSearchReulst);
+//                    mAutoCompleteTextView.re
+                    mListView.setVisibility(View.VISIBLE);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+
+        inputTips.requestInputtipsAsyn();
+    }
+
+    private void initTextChangeListener() {
+        mAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                doSearch(editable.toString());
+                mAutoCompleteTextView.setSelection(editable.toString().length());
+            }
+        });
+        mContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    @OnClick({R.id.bt_safe,R.id.bt_music,R.id.bt_electric,R.id.bt_map})
+    public void onClick(View view){
+        switch (view.getId()) {
+            case R.id.bt_safe:
+                checkeEnable(mSafe,mSafeEnable);
+                mSafeEnable = !mSafeEnable;
+                break;
+
+            case R.id.bt_music:
+                checkeEnable(mMusic,mMusicEnable);
+                mMusicEnable = !mMusicEnable;
+                break;
+
+            case R.id.bt_electric:
+                checkeEnable(mElectic,mElectricEnable);
+                mElectricEnable = !mElectricEnable;
+                break;
+
+            case R.id.bt_map:
+                checkeEnable(mMap,mMapEnable);
+                mMapEnable = !mMapEnable;
+                break;
+
+        }
+    }
+
+    private void checkeEnable(View view,boolean enable){
+        if (enable) {
+            view.setBackgroundResource(R.mipmap.offline_diagnose_unable);
+        } else {
+            view.setBackgroundResource(R.mipmap.offline_diagnose_enable);
+        }
     }
 
     @Override

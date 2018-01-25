@@ -167,11 +167,11 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
          * 设置定位场景，目前支持三种场景（签到、出行、运动，默认无场景）
          */
         mLocationOption.setOnceLocation(false);
-        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
+//        mLocationOption.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.SignIn);
         if (null != mlocationClient) {
             mlocationClient.setLocationOption(mLocationOption);
         //设置场景模式后最好调用一次stop，再调用start以保证场景模式生效
-            mlocationClient.stopLocation();
+//            mlocationClient.stopLocation();
             mlocationClient.startLocation();
         }
     }
@@ -206,6 +206,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
+        Log.d("wanghp007", "onLocationChanged" );
         if (aMapLocation != null) {
             if (aMapLocation.getErrorCode() == 0) {
                 double lat = aMapLocation.getLatitude();

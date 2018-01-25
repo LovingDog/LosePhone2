@@ -23,7 +23,7 @@
             android:gravity="right|center_vertical">
 
             <Button
-                android:id="@+id/bt_save"
+                android:id="@+id/bt_safe"
                 android:layout_width="40dp"
                 android:layout_height="25dp"
                 android:background="@mipmap/offline_diagnose_unable"></Button>
@@ -53,6 +53,7 @@
             android:gravity="right|center_vertical">
 
             <Button
+                android:id="@+id/bt_music"
                 android:layout_width="40dp"
                 android:layout_height="25dp"
                 android:background="@mipmap/offline_diagnose_enable"></Button>
@@ -82,6 +83,7 @@
             android:gravity="right|center_vertical">
 
             <Button
+                android:id="@+id/bt_electric"
                 android:layout_width="40dp"
                 android:layout_height="25dp"
                 android:background="@mipmap/offline_diagnose_enable"></Button>
@@ -111,9 +113,64 @@
             android:gravity="right|center_vertical">
 
             <Button
+                android:id="@+id/bt_map"
                 android:layout_width="40dp"
                 android:layout_height="25dp"
                 android:background="@mipmap/offline_diagnose_enable"></Button>
         </LinearLayout>
     </LinearLayout>
+    <RelativeLayout
+        android:id="@+id/lay_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/lay1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:background="@mipmap/location"/>
+            <EditText
+                android:id="@+id/autotext_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请输入地址搜索"
+                android:layout_marginLeft="5dp"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/lay_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lay1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:background="@mipmap/address_content"/>
+            <EditText
+                android:id="@+id/edit_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请输入提醒内容"
+                android:layout_marginLeft="5dp"
+                />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/listview"
+            android:layout_below="@+id/lay_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </ListView>
+    </RelativeLayout>
 </LinearLayout>
