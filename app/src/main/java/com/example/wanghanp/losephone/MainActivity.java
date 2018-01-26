@@ -1,11 +1,14 @@
 package com.example.wanghanp.losephone;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -17,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -43,6 +47,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,8 +68,10 @@ import com.example.wanghanp.losephone.tabview.ShowFunFragment;
 import com.example.wanghanp.myview.ShowPhotosActivity;
 import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.permissioncheck.PermissionsActivity;
+import com.example.wanghanp.permissioncheck.PermissionsChecker;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
+import com.example.wanghanp.util.ColorUtils;
 import com.example.wanghanp.util.MobileInfo;
 import com.zhy.adapter.recyclerview.CommonAdapter;
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
@@ -111,6 +118,12 @@ public class MainActivity extends AppCompatActivity
     TextView footer_mine;
     @InjectView(R.id.footer_rb_msg)
     TextView footer_msg;
+    @InjectView(R.id.rmp_container)
+    FrameLayout mContainer;
+    @InjectView(R.id.rmp_info_container)
+    RelativeLayout mInfoContainer;
+    @InjectView(R.id.rmp_info_name)
+    TextView mName;
 //    @InjectView(R.id.container)
 //    FrameLayout mFrameLayout;
     private boolean mShowSafeBt = false;
@@ -125,6 +138,7 @@ public class MainActivity extends AppCompatActivity
     private ShowFunFragment mShowFunFragment;
     private SettingFragment mSettingFragment;
     private boolean mIsServiceRunning;
+    private PermissionsChecker mChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,16 +149,8 @@ public class MainActivity extends AppCompatActivity
         mCameraView = (SurfaceView) findViewById(R.id.back_surfaceview);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        updateColors();
         initBroadCast();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -154,14 +160,29 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mSlideSetting = SlideSettings.getInstance(MainActivity.this);
-
-        Intent intent = new Intent(MainActivity.this, PermissionsActivity.class);
-        intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION});
-        ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
+        initCheckPermission();
         //do
         registerTimeBroadCast();
-        startService(new Intent(MainActivity.this, SaveStateService.class));
+    }
+
+    private void initCheckPermission() {
+        mChecker = new PermissionsChecker(this);
+        String[] graint = new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION};
+        if (mChecker.lacksPermissions(graint)) {
+            Intent intent = new Intent(MainActivity.this, PermissionsActivity.class);
+            intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, graint);
+            ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
+        }else {
+            mRequiresCheck = true;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initCamera();
+                }
+            });
+            initSensor();
+        }
     }
 
     private void registerTimeBroadCast() {
@@ -702,5 +723,31 @@ public class MainActivity extends AppCompatActivity
                 startService(new Intent(MainActivity.this, SaveStateService.class));
             }
         }
+    }
+
+    private void updateColors() {
+
+        int[] colors = new int[4];
+        int startC = colors[0];
+        int endC = colors[2];
+
+        GradientDrawable drawable = new GradientDrawable(
+                GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{startC, endC});
+        mContainer.setBackground(drawable);
+        drawable.setAlpha(120);
+        int colorFilter = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            colorFilter = getApplicationContext().getColor(R.color.main_rmp_image_filter);
+        } else {
+            colorFilter = getApplicationContext().getResources().getColor(R.color.main_rmp_image_filter);
+        }
+
+        drawable.setColorFilter(colorFilter, PorterDuff.Mode.MULTIPLY);
+        mInfoContainer.setBackground(drawable);
+        int[] cs = ColorUtils.get10WhiteThemeColors(getApplicationContext());
+        int toolbarMainTC = cs[8];
+        mName.setText("自然过度");
+        mName.setShadowLayer(20, 0, 0, toolbarMainTC);
     }
 }

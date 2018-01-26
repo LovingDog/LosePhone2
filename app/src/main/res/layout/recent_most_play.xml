@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:id="@+id/recent_lay"
+    android:paddingTop="@dimen/activity_default_margin_s">
+
+    <TextView
+        android:text="历史抓拍"
+        android:id="@+id/rmp_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_default_margin_s_s_s"
+        android:drawableLeft="@drawable/line_for_main_title"
+        android:drawablePadding="@dimen/activity_default_padding"
+        android:layout_marginLeft="5dp"
+        android:gravity="start|center_vertical"
+        android:textSize="@dimen/text_middle_s" />
+
+    <FrameLayout
+        android:id="@+id/rmp_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/rmp_content_height">
+
+        <ImageView
+            android:id="@+id/rmp_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/default_album" />
+
+        <RelativeLayout
+            android:id="@+id/rmp_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/l002"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/rmp_info_arts"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="@dimen/activity_default_margin_s_s"
+                android:layout_marginLeft="@dimen/activity_default_margin"
+                android:layout_marginRight="@dimen/activity_default_margin"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/rmp_info_name"
+
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:lines="1"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/activity_default_margin"
+                    android:paddingRight="@dimen/activity_default_margin"
+                    android:shadowColor="@color/white"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="20"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_large_l_l_l"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rmp_info_line"
+                    android:layout_width="wrap_content"
+                    android:layout_height="2px"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/white_d_d" />
+
+                <TextView
+                    android:id="@+id/rmp_info_remark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/activity_default_margin_s_s"
+                    android:alpha="0.7"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/rmp_info_arts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="-15dp"
+                android:paddingBottom="3dp"
+                android:paddingLeft="18dp"
+                android:paddingRight="5dp"
+                android:paddingTop="3dp"
+                android:textSize="@dimen/text_small" />
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/rmp_content_bottom_height">
+
+        <TextView
+            android:id="@+id/rmp_l_time"
+
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="@dimen/activity_default_padding"
+            android:gravity="center_vertical"
+            android:text="播放"
+            android:textSize="@dimen/text_middle_s" />
+
+        <TextView
+            android:id="@+id/rmp_play_time"
+
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/rmp_l_time"
+            android:gravity="center_vertical"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:text="0"
+            android:textSize="@dimen/text_middle_l_l"
+            android:textStyle="italic|bold" />
+
+        <TextView
+            android:id="@+id/rmp_r_time"
+
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/rmp_play_time"
+            android:layout_toRightOf="@+id/rmp_play_time"
+            android:gravity="center_vertical"
+            android:text=""
+            android:textSize="@dimen/text_middle_s" />
+
+
+        <TextView
+            android:id="@+id/rmp_see_more"
+
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="?android:selectableItemBackground"
+            android:clickable="true"
+            android:gravity="center_vertical"
+            android:padding="@dimen/activity_default_padding"
+            android:text="更多"
+            android:textSize="@dimen/text_middle_s" />
+    </RelativeLayout>
+
+    <View
+        android:alpha="0.7"
+        android:id="@+id/rmp_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/dark" />
+
+</LinearLayout>

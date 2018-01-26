@@ -44,6 +44,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.wanghanp.base.bean.TakePhotoBean;
+import com.example.wanghanp.base.preference.BasePreference;
+import com.example.wanghanp.base.preference.SettingPreference;
 import com.example.wanghanp.losephone.MainActivity;
 import com.example.wanghanp.losephone.R;
 import com.example.wanghanp.losephone.service.SlideSettings;
@@ -80,6 +82,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     private double mHomeLastLong;
     private SlideSettings mSlideSetting;
     private boolean mRemindLater = true;
+    private SettingPreference mSettingPreference;
 
     public static final MapViewFragment getInstance(String path){
         MapViewFragment mapviewFragment = new MapViewFragment();
@@ -111,8 +114,12 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 public void run() {
                     searchName("雨花台区梅山街道梅清苑2号门","025");
                 }
-            },1000);
+            },2000);
         }
+        mSettingPreference = new SettingPreference(getActivity(), BasePreference.Preference.APP_SETTING);
+        mHomeLastLat = mSettingPreference.getLat().latitude;
+        mHomeLastLong = mSettingPreference.getLat().longitude;
+        Log.d("wanghp007", "onCreateView: mHomeLastLat == " +mHomeLastLat+"&& mHomeLastLong = " +mHomeLastLong);
         return view;
     }
 
@@ -234,7 +241,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 float homeDistance = AMapUtils.calculateLineDistance(new LatLng(mHomeLastLat,mHomeLastLong),new LatLng(lat,longitude));
                 //homeDistance < 600 &&
                 if (homeDistance < 600 && mRemindLater) {
-                    CommonUtil.simpleNotify(getActivity(), "到家提醒", "消息提醒", "你已到家附近，请查看消息", "losePhone");
+                    CommonUtil.simpleNotify(getActivity(), "新消息", "消息提醒",mSettingPreference.getLocationContent(), "losePhone");
                     if (!mSlideSetting.isPlayerPlaying()) {
                         showMissingPermissionDialog();
                         mSlideSetting.playEnhancementMusic(getActivity());

@@ -3,57 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-    <LinearLayout
+    <TextView
+        android:text="监视照片"
+        android:id="@+id/rmp_type"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
-            android:gravity="center_vertical"
-            android:textColor="@color/colorPrimary"
-            android:text="图片显示" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginRight="15dp"
-            android:gravity="right|center_vertical">
-
-            <Button
-                android:layout_width="40dp"
-                android:layout_height="25dp"
-                android:visibility="gone"
-                android:background="@mipmap/offline_diagnose_enable"></Button>
-        </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        android:layout_height="3dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:layout_marginLeft="15dp"/>
-        <LinearLayout
-            android:id="@+id/lay_right"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="right|center_vertical">
-            <Button
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_marginRight="15dp"
-                android:visibility="gone"
-                android:background="@mipmap/ic_title_btn_right"/>
-        </LinearLayout>
-    </LinearLayout>
+        android:layout_height="42dp"
+        android:drawableLeft="@drawable/line_for_main_title"
+        android:drawablePadding="@dimen/activity_default_padding"
+        android:layout_marginLeft="5dp"
+        android:gravity="start|center_vertical"
+        android:textSize="@dimen/text_middle_s" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_takephotos"
@@ -61,8 +20,10 @@
         android:layout_height="wrap_content">
 
     </android.support.v7.widget.RecyclerView>
-    <LinearLayout
+    <View
+        android:alpha="0.7"
+        android:id="@+id/rmp_line"
         android:layout_width="match_parent"
-        android:background="@color/colorPrimary"
-        android:layout_height="3dp"/>
+        android:layout_height="1px"
+        android:background="@color/dark" />
 </LinearLayout>

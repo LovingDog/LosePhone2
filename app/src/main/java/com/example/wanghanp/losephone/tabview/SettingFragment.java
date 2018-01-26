@@ -3,6 +3,8 @@ package com.example.wanghanp.losephone.tabview;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,14 +17,20 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.help.Inputtips;
 import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.help.Tip;
+import com.example.wanghanp.base.preference.BasePreference;
+import com.example.wanghanp.base.preference.SettingPreference;
 import com.example.wanghanp.losephone.R;
+import com.example.wanghanp.myview.NoScrollListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +53,7 @@ public class SettingFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int MESSAGE_REFRESH_CONFIRM = 1001;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -63,9 +72,15 @@ public class SettingFragment extends Fragment {
     @InjectView(R.id.lay_search)
     RelativeLayout mSearchLay;
     @InjectView(R.id.listview)
-    ListView mListView;
+    NoScrollListView mListView;
     @InjectView(R.id.edit_content)
     EditText mContent;
+    @InjectView(R.id.lay_editor)
+    LinearLayout mContentlay;
+    @InjectView(R.id.iv_confirm)
+    ImageView mConfirm;
+    @InjectView(R.id.iv_confirm2)
+    ImageView mConfirm2;
 
     private boolean mSafeEnable = false;
     private boolean mMusicEnable = true;
@@ -74,6 +89,8 @@ public class SettingFragment extends Fragment {
     private ArrayList<String> mSearchReulst;
     private ArrayAdapter<String> mAdapter;
     private List<Tip> mTipList;
+    private LatLng mLatLng;
+    private SettingPreference mSettingPreference;
 
 
     public SettingFragment() {
@@ -105,6 +122,7 @@ public class SettingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        mTipList = new ArrayList<>();
     }
 
     @Override
@@ -126,34 +144,67 @@ public class SettingFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mTipList.size() == 0) {return;}
                 String name = mSearchReulst.get(i).toString();
                 if (!name.equals(mAutoCompleteTextView.getText().toString())) {
                     mAutoCompleteTextView.setText(mSearchReulst.get(i).toString());
+                    Tip tip = mTipList.get(i);
+                    LatLonPoint latLonPoint = tip.getPoint();
+                    Log.d("wanghp009", "onItemClick: latLonPoint.lat = " +latLonPoint.getLatitude()+"gg"+latLonPoint.getLongitude());
+                    mLatLng = new LatLng(latLonPoint.getLatitude(),latLonPoint.getLongitude());
                 }
                 mListView.setVisibility(View.GONE);
+                mContentlay.setVisibility(View.VISIBLE);
+
             }
         });
+        mSettingPreference = new SettingPreference(getActivity(), BasePreference.Preference.APP_SETTING);
+        mAutoCompleteTextView.setText(mSettingPreference.getLocationName());
+        mContent.setText(mSettingPreference.getLocationContent());
     }
 
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MESSAGE_REFRESH_CONFIRM:
+                    if (mAutoCompleteTextView.getText().toString().trim().equals("")){
+                        mConfirm.setVisibility(View.GONE);
+                    } else {
+                        mConfirm.setVisibility(View.VISIBLE);
+                    }
+                    if (mContent.getText().toString().trim().equals("")){
+                        mConfirm2.setVisibility(View.GONE);
+                    } else {
+                        mConfirm2.setVisibility(View.VISIBLE);
+                    }
+                    break;
+            }
+        }
+    };
+    
     private void doSearch(String city) {
         InputtipsQuery inputquery = new InputtipsQuery(city, "");
         inputquery.setCityLimit(true);//限制在当前城市
-
+        mTipList.clear();
         Inputtips inputTips = new Inputtips(getActivity().getApplicationContext(), inputquery);
         inputTips.setInputtipsListener(new Inputtips.InputtipsListener() {
             @Override
             public void onGetInputtips(List<Tip> list, int i) {
                 Log.d("wanghp007", "onGetInputtips: list.size() = " +list.size());
-                mTipList = list;
+//                mTipList = list;
                 mSearchReulst.clear();
                 for (int j = 0; j < list.size(); j++) {
                     Tip tip = list.get(j);
+                    mTipList.add(tip);
                     mSearchReulst.add(tip.getDistrict()+tip.getName());
                 }
                 if (mAdapter != null) {
 //                    initCompleteText(mSearchReulst);
 //                    mAutoCompleteTextView.re
                     mListView.setVisibility(View.VISIBLE);
+                    mContentlay.setVisibility(View.GONE);
                     mAdapter.notifyDataSetChanged();
                 }
             }
@@ -176,6 +227,8 @@ public class SettingFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                handler.removeMessages(MESSAGE_REFRESH_CONFIRM);
+                handler.sendEmptyMessage(MESSAGE_REFRESH_CONFIRM);
                 doSearch(editable.toString());
                 mAutoCompleteTextView.setSelection(editable.toString().length());
             }
@@ -193,12 +246,13 @@ public class SettingFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                handler.removeMessages(MESSAGE_REFRESH_CONFIRM);
+                handler.sendEmptyMessage(MESSAGE_REFRESH_CONFIRM);
             }
         });
     }
 
-    @OnClick({R.id.bt_safe,R.id.bt_music,R.id.bt_electric,R.id.bt_map})
+    @OnClick({R.id.bt_safe,R.id.bt_music,R.id.bt_electric,R.id.bt_map,R.id.iv_confirm,R.id.iv_confirm2})
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.bt_safe:
@@ -219,6 +273,26 @@ public class SettingFragment extends Fragment {
             case R.id.bt_map:
                 checkeEnable(mMap,mMapEnable);
                 mMapEnable = !mMapEnable;
+                break;
+
+            case R.id.iv_confirm:
+                mListView.setVisibility(View.GONE);
+                mContentlay.setVisibility(View.VISIBLE);
+                String name = mAutoCompleteTextView.getText().toString().trim();
+                if (!name.equals("")) {
+                    mSettingPreference.setLocationName(mAutoCompleteTextView.getText().toString());
+                    mConfirm.setVisibility(View.GONE);
+                    if (mLatLng != null) {
+                        mSettingPreference.setLatPoint(mLatLng);
+                    }
+                }
+                break;
+            case R.id.iv_confirm2:
+                String content = mContent.getText().toString().trim();
+                if (!content.equals("")) {
+                    mSettingPreference.setLocationContent(mContent.getText().toString());
+                    mConfirm2.setVisibility(View.GONE);
+                }
                 break;
 
         }
