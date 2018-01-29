@@ -114,7 +114,7 @@ public class ShowFunFragment extends Fragment {
 
     }
     private void initFragment() {
-        mMapViewFragment = MapViewFragment.getInstance(mPath.get(0).getPath());
+        mMapViewFragment = MapViewFragment.getInstance(mPath.size() == 0 ? " ":mPath.get(0).getPath());
         mFragmentTransaction = getFragmentManager().beginTransaction();
         mFragmentTransaction.add(R.id.container,mMapViewFragment);
         mFragmentTransaction.commit();

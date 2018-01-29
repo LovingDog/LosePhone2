@@ -1,11 +1,13 @@
 package com.example.wanghanp.losephone.tabview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -273,6 +275,7 @@ public class SettingFragment extends Fragment {
             case R.id.bt_map:
                 checkeEnable(mMap,mMapEnable);
                 mMapEnable = !mMapEnable;
+                startActivity(new Intent(getActivity(),LocationRemindActivity.class));
                 break;
 
             case R.id.iv_confirm:
