@@ -29,6 +29,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by wanghanping on 2018/1/29.
@@ -59,6 +60,15 @@ public class SearchLocationActivity extends AppCompatActivity {
         mSearchReulst = new ArrayList<>();
         initCompleteText(mSearchReulst);
         initTextChangeListener();
+    }
+
+    @OnClick({R.id.lay1})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.lay1:
+                finish();
+                break;
+        }
     }
 
     private void initTextChangeListener() {
@@ -111,6 +121,7 @@ public class SearchLocationActivity extends AppCompatActivity {
         InputtipsQuery inputquery = new InputtipsQuery(city, "");
         inputquery.setCityLimit(true);//限制在当前城市
         mTipList.clear();
+        mSearchReulst.clear();
         Inputtips inputTips = new Inputtips(getApplicationContext(), inputquery);
         inputTips.setInputtipsListener(new Inputtips.InputtipsListener() {
             @Override

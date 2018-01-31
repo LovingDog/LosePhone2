@@ -28,7 +28,13 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.EXTERNAL_CONTENT_URI" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.example.wanghanp.losephone.permission.ACCESS_PLAY_SERVICE"></uses-permission>
+    <permission
+        android:name="com.example.wanghanp.losephone.permission.ACCESS_PLAY_SERVICE"
+        android:protectionLevel="normal" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/person"
@@ -76,6 +82,17 @@
             android:process=":service">
             <intent-filter android:priority="1000">
                 <action android:name="com.example.wanghanp.losephone.service"></action>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".music.service.PlayService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.example.wanghanp.losephone.permission.ACCESS_PLAY_SERVICE"
+            android:process=":playService">
+            <intent-filter>
+                <action android:name="com.example.wanghanp.losephone.action.PLAY_SERVICE" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </service>
     </application>

@@ -63,10 +63,10 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_large_l"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/splash_c"
+        app:layout_constraintRight_toLeftOf="@+id/splash_c"
+        app:layout_constraintTop_toTopOf="@+id/splash_c" />
 
     <TextView
         android:id="@+id/splash_c"
@@ -80,9 +80,9 @@
         android:textColor="@color/white"
         android:textSize="@dimen/text_large_l"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/splash_i"
-        app:layout_constraintLeft_toRightOf="@+id/splash_i"
-        app:layout_constraintTop_toTopOf="@+id/splash_i"
+        app:layout_constraintBottom_toTopOf="@+id/guideline20"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
@@ -132,6 +132,21 @@
         app:layout_constraintBottom_toBottomOf="@+id/splash_c1"
         app:layout_constraintLeft_toRightOf="@+id/splash_c1"
         app:layout_constraintTop_toTopOf="@+id/splash_c1" />
+    <TextView
+        android:id="@+id/splash_e1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:padding="2dp"
+        android:text="e"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_large_l"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/splash_o1"
+        app:layout_constraintLeft_toRightOf="@+id/splash_o1"
+        app:layout_constraintTop_toTopOf="@+id/splash_o1" />
 
     <TextView
         android:id="@+id/splash_name"
@@ -155,10 +170,11 @@
         android:layout_marginBottom="0dp"
         android:src="@mipmap/person"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/splash_i"
+        app:layout_constraintBottom_toTopOf="@+id/splash_c"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline19"

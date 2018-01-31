@@ -53,7 +53,7 @@ public class ActivityManager {
     }
 
     public static void startMainActivity(Context context){
-        context.startActivity(new Intent(context, MainActivity.class));
+        context.startActivity(new Intent(context.getApplicationContext(), MainActivity.class));
     }
 
     public void startQQChartPanel(Context context, String qqId) {

@@ -24,13 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.help.Inputtips;
-import com.amap.api.services.help.InputtipsQuery;
-import com.amap.api.services.help.Tip;
 import com.example.wanghanp.base.preference.BasePreference;
 import com.example.wanghanp.base.preference.SettingPreference;
+import com.example.wanghanp.losephone.MainActivity;
 import com.example.wanghanp.losephone.R;
 import com.example.wanghanp.myview.NoScrollListView;
 
@@ -45,7 +41,7 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SettingFragment.OnFragmentInteractionListener} interface
+ * {@link SettingFragment.OnFragmentInteractionListener} interfacelistener
  * to handle interaction events.
  * Use the {@link SettingFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -88,12 +84,7 @@ public class SettingFragment extends Fragment {
     private boolean mMusicEnable = true;
     private boolean mElectricEnable = true;
     private boolean mMapEnable = true;
-    private ArrayList<String> mSearchReulst;
-    private ArrayAdapter<String> mAdapter;
-    private List<Tip> mTipList;
-    private LatLng mLatLng;
     private SettingPreference mSettingPreference;
-
 
     public SettingFragment() {
         // Required empty public constructor
@@ -124,7 +115,6 @@ public class SettingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        mTipList = new ArrayList<>();
     }
 
     @Override
@@ -133,125 +123,12 @@ public class SettingFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
         ButterKnife.inject(this, view);
-        mSearchReulst = new ArrayList<>();
-        initTextChangeListener();
-        initCompleteText(mSearchReulst);
+        initView();
         return view;
     }
-
-    private void initCompleteText(final ArrayList<String> mSearchReulst) {
-
-        mAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,mSearchReulst);
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (mTipList.size() == 0) {return;}
-                String name = mSearchReulst.get(i).toString();
-                if (!name.equals(mAutoCompleteTextView.getText().toString())) {
-                    mAutoCompleteTextView.setText(mSearchReulst.get(i).toString());
-                    Tip tip = mTipList.get(i);
-                    LatLonPoint latLonPoint = tip.getPoint();
-                    Log.d("wanghp009", "onItemClick: latLonPoint.lat = " +latLonPoint.getLatitude()+"gg"+latLonPoint.getLongitude());
-                    mLatLng = new LatLng(latLonPoint.getLatitude(),latLonPoint.getLongitude());
-                }
-                mListView.setVisibility(View.GONE);
-                mContentlay.setVisibility(View.VISIBLE);
-
-            }
-        });
+    private void initView() {
         mSettingPreference = new SettingPreference(getActivity(), BasePreference.Preference.APP_SETTING);
-        mAutoCompleteTextView.setText(mSettingPreference.getLocationName());
-        mContent.setText(mSettingPreference.getLocationContent());
-    }
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MESSAGE_REFRESH_CONFIRM:
-                    if (mAutoCompleteTextView.getText().toString().trim().equals("")){
-                        mConfirm.setVisibility(View.GONE);
-                    } else {
-                        mConfirm.setVisibility(View.VISIBLE);
-                    }
-                    if (mContent.getText().toString().trim().equals("")){
-                        mConfirm2.setVisibility(View.GONE);
-                    } else {
-                        mConfirm2.setVisibility(View.VISIBLE);
-                    }
-                    break;
-            }
-        }
-    };
-    
-    private void doSearch(String city) {
-        InputtipsQuery inputquery = new InputtipsQuery(city, "");
-        inputquery.setCityLimit(true);//限制在当前城市
-        mTipList.clear();
-        Inputtips inputTips = new Inputtips(getActivity().getApplicationContext(), inputquery);
-        inputTips.setInputtipsListener(new Inputtips.InputtipsListener() {
-            @Override
-            public void onGetInputtips(List<Tip> list, int i) {
-                Log.d("wanghp007", "onGetInputtips: list.size() = " +list.size());
-//                mTipList = list;
-                mSearchReulst.clear();
-                for (int j = 0; j < list.size(); j++) {
-                    Tip tip = list.get(j);
-                    mTipList.add(tip);
-                    mSearchReulst.add(tip.getDistrict()+tip.getName());
-                }
-                if (mAdapter != null) {
-//                    initCompleteText(mSearchReulst);
-//                    mAutoCompleteTextView.re
-                    mListView.setVisibility(View.VISIBLE);
-                    mContentlay.setVisibility(View.GONE);
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-        inputTips.requestInputtipsAsyn();
-    }
-
-    private void initTextChangeListener() {
-        mAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                handler.removeMessages(MESSAGE_REFRESH_CONFIRM);
-                handler.sendEmptyMessage(MESSAGE_REFRESH_CONFIRM);
-                doSearch(editable.toString());
-                mAutoCompleteTextView.setSelection(editable.toString().length());
-            }
-        });
-        mContent.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                handler.removeMessages(MESSAGE_REFRESH_CONFIRM);
-                handler.sendEmptyMessage(MESSAGE_REFRESH_CONFIRM);
-            }
-        });
+        checkeEnable(mMap,mSettingPreference.isRemindLocation());
     }
 
     @OnClick({R.id.bt_safe,R.id.bt_music,R.id.bt_electric,R.id.bt_map,R.id.iv_confirm,R.id.iv_confirm2})
@@ -260,6 +137,7 @@ public class SettingFragment extends Fragment {
             case R.id.bt_safe:
                 checkeEnable(mSafe,mSafeEnable);
                 mSafeEnable = !mSafeEnable;
+                ((MainActivity)getActivity()).mShowSafeBt = mSafeEnable;
                 break;
 
             case R.id.bt_music:
@@ -275,26 +153,9 @@ public class SettingFragment extends Fragment {
             case R.id.bt_map:
                 checkeEnable(mMap,mMapEnable);
                 mMapEnable = !mMapEnable;
-                startActivity(new Intent(getActivity(),LocationRemindActivity.class));
-                break;
-
-            case R.id.iv_confirm:
-                mListView.setVisibility(View.GONE);
-                mContentlay.setVisibility(View.VISIBLE);
-                String name = mAutoCompleteTextView.getText().toString().trim();
-                if (!name.equals("")) {
-                    mSettingPreference.setLocationName(mAutoCompleteTextView.getText().toString());
-                    mConfirm.setVisibility(View.GONE);
-                    if (mLatLng != null) {
-                        mSettingPreference.setLatPoint(mLatLng);
-                    }
-                }
-                break;
-            case R.id.iv_confirm2:
-                String content = mContent.getText().toString().trim();
-                if (!content.equals("")) {
-                    mSettingPreference.setLocationContent(mContent.getText().toString());
-                    mConfirm2.setVisibility(View.GONE);
+                mSettingPreference.setMapRemind(mMapEnable);
+                if (mMapEnable) {
+                    startActivity(new Intent(getActivity(),LocationRemindActivity.class));
                 }
                 break;
 
@@ -321,7 +182,7 @@ public class SettingFragment extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
+     * This interfacelistener must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.

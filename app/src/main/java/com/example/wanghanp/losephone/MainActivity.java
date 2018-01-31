@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -18,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
@@ -57,14 +59,24 @@ import com.amap.api.maps.LocationSource;
 import com.bumptech.glide.Glide;
 import com.example.wanghanp.base.UploadContract;
 import com.example.wanghanp.base.bean.TakePhotoBean;
+import com.example.wanghanp.base.interfacelistener.ContentUpdatable;
+import com.example.wanghanp.base.interfacelistener.OnServiceConnect;
+import com.example.wanghanp.base.interfacelistener.OnUpdateStatusChanged;
+import com.example.wanghanp.db.DBMusicocoController;
 import com.example.wanghanp.losephone.Shake.contract.UploadImgPresenter;
 import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
+import com.example.wanghanp.losephone.aidl.IPlayControl;
 import com.example.wanghanp.losephone.camera.CameraManager;
+import com.example.wanghanp.losephone.manager.BroadcastManager;
+import com.example.wanghanp.losephone.manager.MediaManager;
+import com.example.wanghanp.losephone.manager.PlayServiceManager;
 import com.example.wanghanp.losephone.map.MapViewFragment;
+import com.example.wanghanp.losephone.music.service.play.PlayServiceConnection;
 import com.example.wanghanp.losephone.service.SaveStateService;
 import com.example.wanghanp.losephone.service.SlideSettings;
 import com.example.wanghanp.losephone.tabview.SettingFragment;
 import com.example.wanghanp.losephone.tabview.ShowFunFragment;
+import com.example.wanghanp.music.controller.BottomNavigationController;
 import com.example.wanghanp.myview.ShowPhotosActivity;
 import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.permissioncheck.PermissionsActivity;
@@ -89,9 +101,8 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener,
-        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener,UploadContract.UploadView, AMapLocationListener,LocationSource {
+        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener, UploadContract.UploadView, OnServiceConnect ,ContentUpdatable {
 
-    private SlideSettings mSlideSetting;
     private float[] gravity = new float[3];   //重力在设备x、y、z轴上的分量
     private float[] motion = new float[3];  //过滤掉重力后，加速度在x、y、z上的分量
     private double ratioY;
@@ -124,11 +135,10 @@ public class MainActivity extends AppCompatActivity
     RelativeLayout mInfoContainer;
     @InjectView(R.id.rmp_info_name)
     TextView mName;
-//    @InjectView(R.id.container)
+    //    @InjectView(R.id.container)
 //    FrameLayout mFrameLayout;
-    private boolean mShowSafeBt = false;
-    private boolean mRequiresCheck;
-    
+    public boolean mShowSafeBt = false;
+
     private boolean mCanTakePhoto;
     private MapViewFragment mMapViewFragment;
     private FragmentTransaction mFragmentTransaction;
@@ -139,6 +149,14 @@ public class MainActivity extends AppCompatActivity
     private SettingFragment mSettingFragment;
     private boolean mIsServiceRunning;
     private PermissionsChecker mChecker;
+    private PlayServiceManager playServiceManager;
+    private MediaManager mediaManager;
+    private BroadcastManager broadcastManager;
+    private BottomNavigationController bottomNavigationController;
+    private PlayServiceConnection sServiceConnection;
+    protected IPlayControl control;
+    private DBMusicocoController dbController;
+    private BroadcastReceiver mySheetDataUpdateReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +165,17 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.inject(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mCameraView = (SurfaceView) findViewById(R.id.back_surfaceview);
+
+
+        playServiceManager = new PlayServiceManager(this);
+        mediaManager = MediaManager.getInstance();
+
+        // 单例持有的 Context 为 MainActivity 的，最早调用在此。
+        broadcastManager = BroadcastManager.getInstance();
+        bottomNavigationController = new BottomNavigationController(this, mediaManager);
+        dbController = new DBMusicocoController(this, true);
+        bottomNavigationController.initView();
+
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         updateColors();
@@ -159,36 +188,23 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        mSlideSetting = SlideSettings.getInstance(MainActivity.this);
-        initCheckPermission();
-        //do
-        registerTimeBroadCast();
-    }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-    private void initCheckPermission() {
-        mChecker = new PermissionsChecker(this);
-        String[] graint = new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION};
-        if (mChecker.lacksPermissions(graint)) {
-            Intent intent = new Intent(MainActivity.this, PermissionsActivity.class);
-            intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, graint);
-            ActivityCompat.startActivityForResult(MainActivity.this, intent, 102, null);
-        }else {
-            mRequiresCheck = true;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    initCamera();
-                }
-            });
-            initSensor();
-        }
+            }
+        });
+        initCamera();
+        bindService();
+        initSensor();
+        registerTimeBroadCast();
+
     }
 
     private void registerTimeBroadCast() {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_TIME_TICK);
         MyTimeTickBroaCast myTimeTickBroadCast = new MyTimeTickBroaCast();
-        getApplicationContext().registerReceiver(myTimeTickBroadCast,intentFilter);
+        getApplicationContext().registerReceiver(myTimeTickBroadCast, intentFilter);
     }
 
     private void initFragment2() {
@@ -197,7 +213,7 @@ public class MainActivity extends AppCompatActivity
 
         //第一种方式（add），初始化fragment并添加到事务中，如果为null就new一个
         if (mShowFunFragment == null) {
-            mShowFunFragment = ShowFunFragment.newInstance(mPath,"");
+            mShowFunFragment = ShowFunFragment.newInstance(mPath, "");
             transaction.add(R.id.content, mShowFunFragment);
         }
         //隐藏所有fragment
@@ -207,6 +223,7 @@ public class MainActivity extends AppCompatActivity
         //提交事务
         transaction.commit();
     }
+
     private void initFragment3() {
         //开启事务，fragment的控制是由事务来实现的
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -223,17 +240,19 @@ public class MainActivity extends AppCompatActivity
         //提交事务
         transaction.commit();
     }
-    //隐藏所有的fragment
-    private void hideFragment(FragmentTransaction transaction){
 
-        if(mShowFunFragment != null){
+    //隐藏所有的fragment
+    private void hideFragment(FragmentTransaction transaction) {
+
+        if (mShowFunFragment != null) {
             transaction.hide(mShowFunFragment);
         }
-        if(mSettingFragment !=null){
+        if (mSettingFragment != null) {
             transaction.hide(mSettingFragment);
         }
     }
-    @OnClick({ R.id.footer_rb_msg, R.id.footer_rb_mine})
+
+    @OnClick({R.id.footer_rb_msg, R.id.footer_rb_mine})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.footer_rb_msg:
@@ -279,16 +298,21 @@ public class MainActivity extends AppCompatActivity
         return mList;
     }
 
-    @Override
-    public void activate(OnLocationChangedListener onLocationChangedListener) {
+    private void bindService() {
+
+        sServiceConnection = new PlayServiceConnection(bottomNavigationController, this, this);
+        // 绑定成功后回调 onConnected
+        playServiceManager.bindService(sServiceConnection);
 
     }
 
-    @Override
-    public void deactivate() {
-
+    private void unbindService() {
+        if (sServiceConnection != null && sServiceConnection.hasConnected) {
+            sServiceConnection.unregisterListener();
+            unbindService(sServiceConnection);
+            sServiceConnection.hasConnected = false;
+        }
     }
-
 
     private void initCamera() {
         mSurfaceHolder = mCameraView.getHolder();
@@ -304,7 +328,7 @@ public class MainActivity extends AppCompatActivity
                 TakePhotoBean takePhotoBean = new TakePhotoBean();
                 takePhotoBean.setPath(file.getAbsolutePath());
                 mPath.add(takePhotoBean);
-                if (mPath.size() > mSpanCount ) {
+                if (mPath.size() > mSpanCount) {
                     mPath.remove(0);
                 }
                 initTakePhotosAdpater(mPath);
@@ -344,23 +368,8 @@ public class MainActivity extends AppCompatActivity
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
-//        mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-//        mSensorManager.registerListener(listener, mLightSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-//    private SensorEventListener listener=new SensorEventListener() {
-//        @Override
-//        public void onSensorChanged(SensorEvent event) {
-//            float value=event.values[0];
-//            Toast.makeText(getApplicationContext(), "value == "+value, Toast.LENGTH_SHORT).show();
-//        }
-//
-//        @Override
-//        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-//
-//        }
-//    };
 
     private void initBroadCast() {
         mSensorLisener = new SensorListener(MainActivity.this, this);
@@ -370,7 +379,6 @@ public class MainActivity extends AppCompatActivity
         mScreenStateListener.begin(new ScreenListener.ScreenStateListener() {
             @Override
             public void onScreenOn() {
-                Log.d("wanghp007", "onScreenOn: ");
                 mLockScreenState = 0;
                 mBackUpTime = 10;
                 keepLive();
@@ -378,14 +386,12 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onScreenOff() {
-                Log.d("wanghp007", "onScreenOff: ");
                 mLockScreenState = 1;
                 mBackUpTime = 15;
             }
 
             @Override
             public void onUserPresent() {
-                Log.d("wanghp007", "onUserPresent: ");
                 mLockScreenState = 2;
                 mBackUpTime = 10;
 
@@ -393,7 +399,6 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onUserUnlock() {
-                Log.d("wanghp007", "onUserUnlock: ");
                 mLockScreenState = 3;
                 mBackUpTime = 15;
             }
@@ -413,10 +418,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (mRequiresCheck) {
-            mHasFocus = true;
-            mCameramanager.setmSafeTakePhotos(true);
+        if (bottomNavigationController != null && bottomNavigationController.hasInitData()) {
+            // 启动应用时不需要更新，在 initSelfData 中统一更新全部
+            bottomNavigationController.update(null, null);
         }
+        mHasFocus = true;
+        mCameramanager.setmSafeTakePhotos(true);
     }
 
     @Override
@@ -479,24 +486,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mRequiresCheck) {
-            try {
-                mSensorLisener.unRegisterPowerConnection();
-                mSensorManager.unregisterListener(this);
+        try {
+            mSensorLisener.unRegisterPowerConnection();
+            mSensorManager.unregisterListener(this);
 //        mSensorManager.unregisterListener(listener);
-                if (mSlideSetting != null) {
-                    mSlideSetting.playWeakenMusic(MainActivity.this);
-                }
-                if (mScreenStateListener != null) {
-                    mScreenStateListener.unregisterListener();
-                }
-            } catch (IllegalArgumentException e) {
-                // ignore
+          bottomNavigationController.paly(false);
+            if (mScreenStateListener != null) {
+                mScreenStateListener.unregisterListener();
             }
+        } catch (IllegalArgumentException e) {
+            // ignore
         }
         if (mCameramanager != null) {
             mCameramanager.ondestroy();
         }
+        unbindService();
     }
 
     @Override
@@ -541,18 +545,15 @@ public class MainActivity extends AppCompatActivity
             if ((event.values[0] > 0.1) || (event.values[1] > 0.1) || (event.values[2] > 0.1)
                     || (gravity[0] > 0.1) || (gravity[1] > 0.1) || (gravity[2] > 0.1)
                     || (motion[0] > 0.1) || (motion[1] > 0.1) || (motion[2] > 0.1)) {
-                if (mSlideSetting != null) {
                     if (mLockScreenState == 2 && mBatteryStatus == 4) {
                         // do user operation
                     } else {
-                        Log.d("wanghp008", "onSensorChanged: mSlideSetting.isPlayerPlaying():" + mSlideSetting.isPlayerPlaying() + "mCameramanager.ismSafeTakePhotos():" + mCameramanager.ismSafeTakePhotos());
-                        if (!mSlideSetting.isPlayerPlaying() && mCameramanager.ismSafeTakePhotos()) {
+                         if (!bottomNavigationController.checked() && mCameramanager.ismSafeTakePhotos()) {
                             mCameramanager.setmSafeTakePhotos(false);
                             takeFrontPhoto2();
-                            mSlideSetting.playEnhancementMusic(MainActivity.this);
+//                             bottomNavigationController.paly(false);
                         }
                     }
-                }
                 mShake = true;
                 if (mPeaceCount > 0) {
                     mPeaceCount = 0;
@@ -615,9 +616,7 @@ public class MainActivity extends AppCompatActivity
     private Runnable task = new Runnable() {
         @Override
         public void run() {
-            if (mSlideSetting != null) {
-                mSlideSetting.playWeakenMusic(MainActivity.this);
-            }
+//            bottomNavigationController.paly(false);
         }
     };
 
@@ -651,7 +650,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onAutoFocus(boolean success, Camera camera) {
             //TODO:空实现
-            Log.d("wanghp007", "onAutoFocus:success = " +success );
+            Log.d("wanghp007", "onAutoFocus:success = " + success);
         }
     };
 
@@ -667,33 +666,39 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 102 && resultCode == PermissionsActivity.PERMISSIONS_GRANTED) {
-            mRequiresCheck = true;
             initSensor();
             initCamera();
+            registerTimeBroadCast();
+            bindService();
         }
     }
 
     @Override
-    public void onLocationChanged(AMapLocation amapLocation) {
-        Log.d("wanghp009", "onLocationChanged: ");
-        if (amapLocation != null) {
-            if (amapLocation.getErrorCode() == 0) {
-                //定位成功回调信息，设置相关消息
-                Log.d("wanghp009", "onLocationChanged: "+amapLocation.getLatitude());
-                amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
-                amapLocation.getLatitude();//获取纬度
-                amapLocation.getLongitude();//获取经度
-                amapLocation.getAccuracy();//获取精度信息
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date(amapLocation.getTime());
-                df.format(date);//定位时间
-            } else {
-                //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
-                Log.d("AmapError","location Error, ErrCode:"
-                        + amapLocation.getErrorCode() + ", errInfo:"
-                        + amapLocation.getErrorInfo());
-            }
-        }
+    public void onConnected(ComponentName name, IBinder service) {
+        this.control = IPlayControl.Stub.asInterface(service);
+        initSelfData();
+    }
+
+    private void initSelfData() {
+        bottomNavigationController.initData(control, dbController);
+    }
+
+    @Override
+    public void disConnected(ComponentName name) {
+        sServiceConnection = null;
+        sServiceConnection = new PlayServiceConnection(bottomNavigationController, this, this);
+        // 重新绑定
+        playServiceManager.bindService(sServiceConnection);
+    }
+
+    @Override
+    public void update(Object obj, OnUpdateStatusChanged statusChanged) {
+        bottomNavigationController.update(obj, statusChanged);
+    }
+
+    @Override
+    public void noData() {
+
     }
 
     private class MyTimeTickBroaCast extends BroadcastReceiver {
@@ -701,7 +706,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() == Intent.ACTION_TIME_TICK) {
-                Log.d("wanghp007", "Intent.ACTION_TIME_TICK " );
+                Log.d("wanghp007", "Intent.ACTION_TIME_TICK ");
                 keepLive();
             }
         }
@@ -710,7 +715,7 @@ public class MainActivity extends AppCompatActivity
     private void keepLive() {
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> lists = activityManager.getRunningServices(Integer.MAX_VALUE);
-        for (ActivityManager.RunningServiceInfo runningService:
+        for (ActivityManager.RunningServiceInfo runningService :
                 lists) {
             if (runningService.service.getClassName().equals("com.example.wanghanp.losephone.service.SaveStateService")) {
                 mIsServiceRunning = true;
@@ -749,5 +754,17 @@ public class MainActivity extends AppCompatActivity
         int toolbarMainTC = cs[8];
         mName.setText("自然过度");
         mName.setShadowLayer(20, 0, 0, toolbarMainTC);
+    }
+
+    public void play() {
+        bottomNavigationController.paly(false);
+    }
+
+    public void pause() {
+        bottomNavigationController.pause();
+    }
+
+    public boolean isCheck() {
+        return bottomNavigationController.checked();
     }
 }

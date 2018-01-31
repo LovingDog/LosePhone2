@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -46,6 +47,8 @@ import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.base.preference.BasePreference;
 import com.example.wanghanp.base.preference.SettingPreference;
+import com.example.wanghanp.db.LocationController;
+import com.example.wanghanp.db.modle.LocationInfo;
 import com.example.wanghanp.losephone.MainActivity;
 import com.example.wanghanp.losephone.R;
 import com.example.wanghanp.losephone.service.SlideSettings;
@@ -64,7 +67,7 @@ import butterknife.InjectView;
  * Created by wanghanping on 2018/1/17.
  */
 
-public class MapViewFragment extends Fragment implements AMapLocationListener,LocationSource,GeocodeSearch.OnGeocodeSearchListener {
+public class MapViewFragment extends Fragment implements AMapLocationListener,LocationSource {
 
     TextureMapView mMapView;
     //声明mlocationClient对象
@@ -78,11 +81,10 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     private double mLastLat;
     private double mLastLong;
     private GeocodeSearch mGeocoderSearch;
-    private double mHomeLastLat;
-    private double mHomeLastLong;
-    private SlideSettings mSlideSetting;
     private boolean mRemindLater = true;
     private SettingPreference mSettingPreference;
+    private LocationController mLocationController;
+    private List<LocationInfo> mLocationList;
 
     public static final MapViewFragment getInstance(String path){
         MapViewFragment mapviewFragment = new MapViewFragment();
@@ -95,39 +97,25 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.inject(getActivity());
-        mSlideSetting = SlideSettings.getInstance(getActivity());
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mapview, container, false);
+        ButterKnife.inject(this,view);
         mMapView = view.findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mAmap = mMapView.getMap();
         if (mAmap != null) {
             initAmap();
             initLocation();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    searchName("雨花台区梅山街道梅清苑2号门","025");
-                }
-            },2000);
         }
         mSettingPreference = new SettingPreference(getActivity(), BasePreference.Preference.APP_SETTING);
-        mHomeLastLat = mSettingPreference.getLat().latitude;
-        mHomeLastLong = mSettingPreference.getLat().longitude;
-        Log.d("wanghp007", "onCreateView: mHomeLastLat == " +mHomeLastLat+"&& mHomeLastLong = " +mHomeLastLong);
         return view;
     }
 
     private void initAmap() {
-        mGeocoderSearch = new GeocodeSearch(getActivity().getApplicationContext());
-        mGeocoderSearch.setOnGeocodeSearchListener(this);
-
-
         MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory
                 .fromResource(R.mipmap.location_marker));
@@ -147,14 +135,20 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
         mAmap.setMapType(AMap.MAP_TYPE_NORMAL);
     }
 
-    private void searchName(String name,String cityCode) {
-        GeocodeQuery query = new GeocodeQuery(name, "025");
-        mGeocoderSearch.getFromLocationNameAsyn(query);
-    }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+    private void initDbData() {
+        mLocationController = new LocationController(getActivity());
+        mLocationList = mLocationController.getLocationInfos();
+        Log.d("wanghp007", "initDbData: mLocationList.size = " +mLocationList.size());
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        initDbData();
     }
 
     private void initLocation() {
@@ -198,9 +192,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mSlideSetting != null) {
-            mSlideSetting.playWeakenMusic(getActivity());
-        }
+        ((MainActivity)getActivity()).pause();
     }
 
     @Override
@@ -213,13 +205,17 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        Log.d("wanghp007", "onLocationChanged" );
+        Log.d("wanghp007", "onLocationChanged"+mSettingPreference.isRemindLocation() );
+        if (!mSettingPreference.isRemindLocation()) {
+            return;
+        }
         if (aMapLocation != null) {
             if (aMapLocation.getErrorCode() == 0) {
                 double lat = aMapLocation.getLatitude();
                 double longitude = aMapLocation.getLongitude();
                 float distance = AMapUtils.calculateLineDistance(new LatLng(mLastLat,mLastLong),new LatLng(lat,longitude));
                 Log.d("wanghp007", "onLocationChanged: distance == " +distance);
+//                new CompareDistanceAsyncTask().execute();
                 if (distance > 1000) {
                     mAmap.clear();
                     mAmap.moveCamera(CameraUpdateFactory.zoomTo(17));
@@ -238,24 +234,68 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 }
                 mLastLat = aMapLocation.getLatitude();
                 mLastLong = aMapLocation.getLongitude();
-                float homeDistance = AMapUtils.calculateLineDistance(new LatLng(mHomeLastLat,mHomeLastLong),new LatLng(lat,longitude));
-                //homeDistance < 600 &&
-                if (homeDistance < 600 && mRemindLater) {
-                    CommonUtil.simpleNotify(getActivity(), "新消息", "消息提醒",mSettingPreference.getLocationContent(), "losePhone");
-                    if (!mSlideSetting.isPlayerPlaying()) {
-                        showMissingPermissionDialog();
-                        mSlideSetting.playEnhancementMusic(getActivity());
-                        mRemindLater = false;
-                    }
-                } else if (homeDistance > 1000 * 3) {
-                    if (mSlideSetting.isPlayerPlaying()) {
-                        mSlideSetting.playWeakenMusic(getActivity());
-                    }
-                }
+                excuteCompareLatlng();
             }
         }
     }
-    private void showMissingPermissionDialog() {
+
+    private void excuteCompareLatlng(){
+        for (LocationInfo location:
+                mLocationList) {
+            double compareLat = location.latitude;
+            double compreLong = location.longitude;
+
+            Log.d("wanghp007", "doInBackground: compareLat = "+compareLat+"&& compreLong = " +compreLong);
+            float homeDistance = AMapUtils.calculateLineDistance(new LatLng(compareLat,compreLong),new LatLng(mLastLat,mLastLong));
+            Log.d("wanghp007", "doInBackground: homeDistance = "+homeDistance);
+            //homeDistance < 600 &&
+            if (homeDistance < 600 && mRemindLater) {
+                CommonUtil.simpleNotify(getActivity(), "新消息", "闹钟提醒",location.content, "LosePhone");
+                if (!((MainActivity)getActivity()).isCheck()){
+                    showMissingPermissionDialog(location.content);
+                    ((MainActivity)getActivity()).play();
+                    mRemindLater = false;
+                }
+                break;
+            }
+        }
+    }
+
+    class CompareDistanceAsyncTask extends AsyncTask<Void,Void,Void>{
+
+//        private double latitude;
+//        private double longitude;
+//        public CompareDistanceAsyncTask(double lat,double longi) {
+//            this.latitude = lat;
+//            this.longitude = longi;
+//        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.d("wanghp007", "doInBackground: mLocationList.size = "+mLocationList.size());
+            for (LocationInfo location:
+                    mLocationList) {
+                double compareLat = location.latitude;
+                double compreLong = location.longitude;
+
+                Log.d("wanghp007", "doInBackground: compareLat = "+compareLat+"&& compreLong = " +compreLong);
+                float homeDistance = AMapUtils.calculateLineDistance(new LatLng(compareLat,compreLong),new LatLng(mLastLat,mLastLong));
+                Log.d("wanghp007", "doInBackground: homeDistance = "+homeDistance);
+                //homeDistance < 600 &&
+                if (homeDistance < 600 && mRemindLater) {
+                    CommonUtil.simpleNotify(getActivity(), "新消息", "消息提醒",location.content, "LosePhone");
+                    if (!((MainActivity)getActivity()).isCheck()){
+                        showMissingPermissionDialog(location.content);
+                        ((MainActivity)getActivity()).play();
+                        mRemindLater = false;
+                    }
+                    break;
+                }
+            }
+            return null;
+        }
+    }
+    private void showMissingPermissionDialog(String content) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setTitle("提醒");
         dialogBuilder.setMessage("主人，你已到家，请关注下");
@@ -263,9 +303,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mRemindLater = true;
-                if (mSlideSetting != null) {
-                    mSlideSetting.playWeakenMusic(getActivity());
-                }
+                ((MainActivity)getActivity()).play();
             }
         });
         dialogBuilder.setPositiveButton("知道了", new DialogInterface.OnClickListener() {
@@ -275,9 +313,7 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                 if (CommonUtil.isWeixinAvilible(getActivity())) {
                     CommonUtil.startWeChatAc(getActivity());
                     mlocationClient.stopLocation();
-                    if (mSlideSetting != null) {
-                        mSlideSetting.playWeakenMusic(getActivity());
-                    }
+                    ((MainActivity)getActivity()).pause();
                 }
             }
         });
@@ -323,25 +359,5 @@ public class MapViewFragment extends Fragment implements AMapLocationListener,Lo
                         mAmap.addMarker(options);
                     }
                 });
-    }
-
-    @Override
-    public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
-
-    }
-
-    @Override
-    public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {//i == 1000
-        if (i == 1000) {
-            List<GeocodeAddress> list = geocodeResult.getGeocodeAddressList();
-            for (int j = 0; j < list.size(); j++) {
-                GeocodeAddress address = list.get(j);
-                Log.d("wanghp007", "onGeocodeSearched: " + address.getLatLonPoint());
-                LatLonPoint latPoint = address.getLatLonPoint();
-                mHomeLastLat = latPoint.getLatitude();
-                mHomeLastLong = latPoint.getLongitude();
-                Log.d("wanghp007", "onGeocodeSearched: " + latPoint.getLatitude() + " " + latPoint.getLongitude());
-            }
-        }
     }
 }

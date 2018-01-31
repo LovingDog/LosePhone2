@@ -18,7 +18,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="10dp"
                 android:background="@mipmap/ic_title_btn_back"/>
             <EditText
                 android:id="@+id/autotext_search"
@@ -28,7 +28,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:textColorHint="@color/white_main_bg"
-                android:textSize="@dimen/activity_default_margin_s_s_s"
+                android:textSize="@dimen/activity_default_margin_s_s"
                 android:layout_marginLeft="5dp"
                 />
         </LinearLayout>

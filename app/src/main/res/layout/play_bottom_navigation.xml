@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/list_bottom_nav_container"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/white"
+    android:clickable="true">
+
+    <FrameLayout
+        android:id="@+id/list_progress_container"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true">
+
+        <View
+            android:id="@+id/list_progress_bg"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#ffffff" />
+
+        <View
+            android:id="@+id/list_progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center|start"
+            android:background="@color/colorPrimaryDark" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/list_progress_container"
+        android:layout_toLeftOf="@+id/list_list"
+        android:paddingBottom="@dimen/activity_default_margin_half_s"
+        android:paddingLeft="@dimen/activity_default_margin_half_s"
+        android:paddingTop="@dimen/activity_default_margin_half_s">
+
+        <ImageView
+            android:id="@+id/list_album"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:src="@mipmap/person" />
+
+        <com.example.wanghanp.myview.media.PlayView
+            android:id="@+id/list_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="10dp"
+            android:rotation="180"
+            app:radius="20dp"
+            android:layout_alignParentRight="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/activity_default_margin_s"
+            android:layout_marginRight="@dimen/activity_default_margin"
+            android:layout_toLeftOf="@id/list_play"
+            android:layout_toRightOf="@id/list_album"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/list_name"
+
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:lines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_small_s" />
+
+            <TextView
+                android:id="@+id/list_arts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:textSize="@dimen/text_small_s" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <ImageButton
+        android:id="@+id/list_list"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="#00ffffff"
+        android:scaleX="0.7"
+        android:scaleY="0.8"
+        android:src="@mipmap/ic_play_list"
+        android:tint="@color/white_d_d"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

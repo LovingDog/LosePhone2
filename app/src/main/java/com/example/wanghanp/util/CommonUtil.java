@@ -77,7 +77,7 @@ public class CommonUtil {
         //第一行内容  通常作为通知栏标题
         builder.setContentTitle(Title);
         //第二行内容 通常是通知正文
-        builder.setContentText(content);
+        builder.setContentText("提醒内容:"+content);
         //第三行内容 通常是内容摘要什么的 在低版本机器上不一定显示
         builder.setSubText(subTitle);
         //ContentInfo 在通知的右侧 时间的下面 用来展示一些其他信息

@@ -24,6 +24,6 @@ public class LocationHelper extends SQLiteOpenHelper {
     }
 
     private void initLocationDb(SQLiteDatabase db) {
-        LocationController.createTable(db);
+
     }
 }

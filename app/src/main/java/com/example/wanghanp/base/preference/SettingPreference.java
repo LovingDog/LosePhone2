@@ -15,6 +15,7 @@ public class SettingPreference extends BasePreference {
     public static final String MODE_SETTING_LONG = "setting_longitude";
     public static final String MODE_SETTING_LOCATION = "setting_location_name";
     public static final String MODE_SETTING_LOCATION_CONTENT = "setting_location_content";
+    public static final String MODE_SETTING_REMIND = "setting_location_remind";
 
     public SettingPreference(Context context, Preference which) {
         super(context, Preference.APP_SETTING);
@@ -61,5 +62,15 @@ public class SettingPreference extends BasePreference {
 
     public String getLocationContent() {
         return preferences.getString(MODE_SETTING_LOCATION_CONTENT,"");
+    }
+
+    public void setMapRemind(boolean remind) {
+        editor = preferences.edit();
+        editor.putBoolean(MODE_SETTING_REMIND,remind);
+        editor.commit();
+    }
+
+    public boolean isRemindLocation() {
+        return preferences.getBoolean(MODE_SETTING_REMIND,false);
     }
 }

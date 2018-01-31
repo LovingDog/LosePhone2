@@ -94,6 +94,13 @@ public class LocationController {
         contentValues.put(LOCATION_TAG1,locationInfo.tag1);
         contentValues.put(LOCATION_LATITUDE,locationInfo.latitude);
         contentValues.put(LOCATION_LONGITUDE,locationInfo.longitude);
+        this.database.insert(TABLE_LOCATION,null,contentValues);
+    }
+
+    public void deleteLocationById(int id) {
+        String where = LOCATION_ID+" = ?";
+        String[] arg = new String[] {String.valueOf(id)};
+        int a = this.database.delete(TABLE_LOCATION,where,arg);
     }
 
     public void close() {
