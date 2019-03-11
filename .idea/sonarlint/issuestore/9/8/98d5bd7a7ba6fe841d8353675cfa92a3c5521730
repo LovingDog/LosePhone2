@@ -1,0 +1,26 @@
+
+8squid:S1643"Use a StringBuilder instead.(ëæÆ8ÈÛÈ±•-
+=squid:S1643"Use a StringBuilder instead.(¼÷†âıÿÿÿÿ8ÈÛÈ±•-
+8squid:S1643"Use a StringBuilder instead.(€ÅÏ’8ÈÛÈ±•-
+=squid:S1643"Use a StringBuilder instead.(úÚ…–úÿÿÿÿ8ÈÛÈ±•-
+8squid:S1643"Use a StringBuilder instead.(Âó€Ç8ÈÛÈ±•-
+=squid:S1643"Use a StringBuilder instead.(½ò¼¬şÿÿÿÿ8ÈÛÈ±•-
+8squid:S1643"Use a StringBuilder instead.(£˜ôÖ8ÈÛÈ±•-
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(µ­ËËùÿÿÿÿ8ÈÛÈ±•-
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(×ö³–úÿÿÿÿ8ÈÛÈ±•-
+bsquid:S1192"FDefine a constant instead of duplicating this literal "alarm" 3 times.(€éÂ£8ÈÛÈ±•-
+Ksquid:S1068"/Remove this unused "mJsonObject" private field.(¦ü‡8ÈÛÈ±•-
+tsquid:S1450"XRemove the "mComplete" field and declare it as a local variable in the relevant methods.(•«¾8ÈÛÈ±•-
+qsquid:S1450"URemove the "mTitle" field and declare it as a local variable in the relevant methods.(’§¤È8ÈÛÈ±•-
+vsquid:S1450"ZRemove the "mJsonObject" field and declare it as a local variable in the relevant methods.(¦ü‡8ÈÛÈ±•-
+ssquid:S1450"XRemove the "mWeekShow" field and declare it as a local variable in the relevant methods.(µØ­8ÈÛÈ±•-
+lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(×ö³–úÿÿÿÿ8ÈÛÈ±•-
+Fsquid:S1481"*Remove this unused "count" local variable.(æÕ¿¼8ÈÛÈ±•-
+=squid:S1170"!Make this final field static too.(—î²×8ÈÛÈ±•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(»”¹˜úÿÿÿÿ8ÈÛÈ±•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(³ûÇ¤8ÈÛÈ±•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(»”¹˜úÿÿÿÿ8ÈÛÈ±•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(îÁú½8ÈÛÈ±•-
+Dsquid:S1185"(Remove this method to simply inherit it.(ÍÙ÷¢8ÈÛÈ±•-
+psquid:UselessImportCheck"BRemove this unused import 'com.example.wanghanp.util.StringUtils'.(Ì£´ƒÿÿÿÿÿ8ÈÛÈ±•-
+ˆsquid:UselessImportCheck"ZRemove this unused import 'com.example.wanghanp.losephone.tabview.LocationRemindActivity'.(ë’å‚ûÿÿÿÿ8ÈÛÈ±•-

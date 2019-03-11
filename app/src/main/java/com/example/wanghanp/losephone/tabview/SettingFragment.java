@@ -3,49 +3,43 @@ package com.example.wanghanp.losephone.tabview;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 
+import com.example.wanghanp.alarm.AddAlarmActivity;
+import com.example.wanghanp.alarm.AlarmClock;
+import com.example.wanghanp.alarm.AlarmInfo;
+import com.example.wanghanp.alarm.AlarmInfoDao;
+import com.example.wanghanp.alarm.AlarmLockScreenActivity;
+import com.example.wanghanp.alarm.location_alarm.LocationAlarmActivity;
+import com.example.wanghanp.baiduspeak.BaiduSpeakMainActivity;
 import com.example.wanghanp.base.preference.BasePreference;
-import com.example.wanghanp.base.preference.SettingPreference;
 import com.example.wanghanp.losephone.MainActivity;
 import com.example.wanghanp.losephone.R;
-import com.example.wanghanp.myview.NoScrollListView;
+import com.example.wanghanp.myview.PublishPopWindow;
+import com.example.wanghanp.service.LongRunningService;
+import com.example.wanghanp.util.ConsUtils;
+import com.zhy.adapter.recyclerview.CommonAdapter;
+import com.zhy.adapter.recyclerview.base.ViewHolder;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SettingFragment.OnFragmentInteractionListener} interfacelistener
- * to handle interaction events.
- * Use the {@link SettingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SettingFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,34 +51,16 @@ public class SettingFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    @InjectView(R.id.bt_safe)
-    Button mSafe;
-    @InjectView(R.id.bt_music)
-    Button mMusic;
-    @InjectView(R.id.bt_electric)
-    Button mElectic;
-    @InjectView(R.id.bt_map)
-    Button mMap;
-    @InjectView(R.id.autotext_search)
-    EditText mAutoCompleteTextView;
-    @InjectView(R.id.lay_search)
-    RelativeLayout mSearchLay;
-    @InjectView(R.id.listview)
-    NoScrollListView mListView;
-    @InjectView(R.id.edit_content)
-    EditText mContent;
-    @InjectView(R.id.lay_editor)
-    LinearLayout mContentlay;
-    @InjectView(R.id.iv_confirm)
-    ImageView mConfirm;
-    @InjectView(R.id.iv_confirm2)
-    ImageView mConfirm2;
+    @InjectView(R.id.recyclerview)
+    RecyclerView mRecyclerView;
 
     private boolean mSafeEnable = false;
     private boolean mMusicEnable = true;
     private boolean mElectricEnable = true;
     private boolean mMapEnable = true;
-    private SettingPreference mSettingPreference;
+    private AlarmInfoDao mDao;
+    private AlarmClock mAlarmClock;
+    private List<AlarmInfo> mAlarmInfoList;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -108,6 +84,25 @@ public class SettingFragment extends Fragment {
         return fragment;
     }
 
+    //添加新的闹钟时回调该方法
+    public void addAlarmInfo(boolean startService){
+        if (startService) {
+            mDao = new AlarmInfoDao(getActivity());
+            mAlarmClock = new AlarmClock(getActivity());
+            mAlarmInfoList = mDao.getAllInfo();
+            if(mAlarmInfoList.size()>0){
+                //开启闹钟或关闭闹钟
+                Bundle bundle=new Bundle();
+                bundle.putSerializable("alarminfo", (Serializable) mAlarmInfoList);
+                bundle.setClassLoader(AlarmInfo.class.getClassLoader());
+                Intent intent = new Intent(getActivity(),LongRunningService.class);
+                intent.putExtra("bundle",bundle);
+                getActivity().startService(intent);
+            }
+        }
+        initData();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,48 +113,164 @@ public class SettingFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        addAlarmInfo(true);
+//        mDao = new AlarmInfoDao(getActivity());
+//        mAlarmClock = new AlarmClock(getActivity());
+//        mAlarmInfoList = mDao.getAllInfo();
+//        if(mAlarmInfoList.size()>0){
+//            new Thread(){
+//                @Override
+//                public void run() {
+//                    for (AlarmInfo alarmInfo:mAlarmInfoList) {
+//                        Boolean isAlarmOn=PrefUtils.getBoolean(getContext(), alarmInfo.getId(), true);
+//                        //开启闹钟或关闭闹钟
+//                        mAlarmClock.turnAlarm(alarmInfo,null,isAlarmOn);
+//                    }
+//                }
+//            }.start();
+//        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_setting, container, false);
+        View view = inflater.inflate(R.layout.fragment_clock, container, false);
         ButterKnife.inject(this, view);
         initView();
         return view;
     }
-    private void initView() {
-        mSettingPreference = new SettingPreference(getActivity(), BasePreference.Preference.APP_SETTING);
-        checkeEnable(mMap,mSettingPreference.isRemindLocation());
+
+    PublishPopWindow popWindow;
+
+    public void onClick(){
+        popWindow = new PublishPopWindow(getActivity(), new PublishPopWindow.OnPopWindowClick() {
+            @Override
+            public void click(int type) {
+                switch (type) {
+                    case 0:
+                        popWindow.dismiss();
+//                        startActivity(new Intent(getActivity(), BaiduSpeakMainActivity.class));
+                        getActivity().startActivityForResult(new Intent(getActivity(),AddAlarmActivity.class), ConsUtils.SET_ALARM_DONE);
+                        break;
+                    case 1:
+                        popWindow.dismiss();
+                        getActivity().startActivityForResult(new Intent(getActivity(),LocationAlarmActivity.class), ConsUtils.SET_LOCATION_ALARM_DONE);
+                        break;
+                }
+            }
+        });
+        popWindow.showMoreWindow(mRecyclerView);
     }
 
-    @OnClick({R.id.bt_safe,R.id.bt_music,R.id.bt_electric,R.id.bt_map,R.id.iv_confirm,R.id.iv_confirm2})
-    public void onClick(View view){
-        switch (view.getId()) {
-            case R.id.bt_safe:
-                checkeEnable(mSafe,mSafeEnable);
-                mSafeEnable = !mSafeEnable;
-                ((MainActivity)getActivity()).mShowSafeBt = mSafeEnable;
-                break;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("alarm","fragment_onactivityResult");
+    }
 
-            case R.id.bt_music:
-                checkeEnable(mMusic,mMusicEnable);
-                mMusicEnable = !mMusicEnable;
-                break;
+    private void initView() {
+        initRecyclerView();
+    }
 
-            case R.id.bt_electric:
-                checkeEnable(mElectic,mElectricEnable);
-                mElectricEnable = !mElectricEnable;
-                break;
-
-            case R.id.bt_map:
-                checkeEnable(mMap,mMapEnable);
-                mMapEnable = !mMapEnable;
-                mSettingPreference.setMapRemind(mMapEnable);
-                if (mMapEnable) {
-                    startActivity(new Intent(getActivity(),LocationRemindActivity.class));
+    private void initRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.HORIZONTAL));
+        mDao = new AlarmInfoDao(getActivity());
+        mAlarmClock = new AlarmClock(getActivity());
+        mAlarmInfoList = mDao.getAllInfo();
+        initData();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
+                @Override
+                public boolean onFling(int velocityX, int velocityY) {
+                    return false;
                 }
-                break;
 
+
+            });
         }
+    }
+
+
+    private void initData() {
+        CommonAdapter<AlarmInfo> commonAdapter  = new CommonAdapter<AlarmInfo>(getActivity(),R.layout.list_item_clock,mAlarmInfoList) {
+            @Override
+            protected void convert(ViewHolder holder, AlarmInfo clock, int position) {
+                final AlarmInfo clock1 = mAlarmInfoList.get(position);
+                final String show = clock1.getTag();
+                if (show.equals("1")) {
+                    holder.getConvertView().setAlpha(1.0f);
+                    holder.setBackgroundRes(R.id.iv_switch,R.mipmap.offline_diagnose_enable);
+                } else {
+                    holder.getConvertView().setAlpha(0.5f);
+                    holder.setBackgroundRes(R.id.iv_switch,R.mipmap.offline_diagnose_unable);
+                }
+                if (clock1.getHour() == -1) {
+                    holder.setText(R.id.tv_clock_time,clock1.getLocation());
+//                    holder.setBackgroundRes(R.id.tv_clock_type,R.mipmap.clock_location);
+                } else {
+                    holder.setText(R.id.tv_clock_time,clock1.getHour()+":"+clock1.getMinute());
+//                    holder.setBackgroundRes(R.id.tv_clock_type,R.mipmap.clock_time);
+                }
+
+                if (clock1.getDesc() != null) {
+                    holder.setText(R.id.tv_clock_content,clock1.getDesc());
+                } else {
+                    holder.setText(R.id.tv_clock_content,"温馨提醒");
+                }
+
+                String day=Arrays.toString(clock1.getDayOfWeek());
+                String desc;
+                //判断当前的重复天数
+                if(day.equals("0")){
+                    desc="一次性闹钟";
+                }else if(day.equals("[1,2,3,4,5]")){
+                    desc="工作日";
+                }else if(day.equals("[1,2,3,4,5,6,7]")){
+                    desc="每天";
+                }else if(day.equals("[6,7]")){
+                    desc="周末";
+                }else{
+                    desc="每周 "+day+" 重复";
+                }
+                holder.setText(R.id.tv_clock_status, desc);
+
+                holder.setOnClickListener(R.id.iv_switch, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (show.equals("1")) {
+                            clock1.setTag("0");
+                        } else {
+                            clock1.setTag("1");
+                        }
+                        mDao.updateAlarm(clock1.getId(),clock1);
+                        initData();
+                    }
+                });
+                holder.getConvertView().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (clock1.getLocation() != null) {
+                            Intent intent = new Intent(getActivity(),LocationAlarmActivity.class);
+                            intent.putExtra("update",true);
+                            intent.putExtra("oldId",clock1.getId());
+                            getActivity().startActivityForResult(intent, ConsUtils.SET_ALARM_DONE);
+                        } else {
+                            Intent intent = new Intent(getActivity(),AddAlarmActivity.class);
+                            intent.putExtra("update",true);
+                            intent.putExtra("oldId",clock1.getId());
+                            getActivity().startActivityForResult(intent, ConsUtils.SET_ALARM_DONE);
+                        }
+                    }
+                });
+            }
+        };
+        mRecyclerView.setAdapter(commonAdapter);
     }
 
     private void checkeEnable(View view,boolean enable){
@@ -181,16 +292,6 @@ public class SettingFragment extends Fragment {
         super.onDetach();
     }
 
-    /**
-     * This interfacelistener must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

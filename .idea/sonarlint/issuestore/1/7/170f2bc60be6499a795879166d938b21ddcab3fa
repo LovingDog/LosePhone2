@@ -1,0 +1,23 @@
+
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ğŒÂ´şÿÿÿÿ8ë¨©†•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ñ½ ¾ÿÿÿÿÿ8ë¨©†•-
+qsquid:UselessImportCheck"CRemove this unused import 'android.support.v4.graphics.ColorUtils'.(³—Áøÿÿÿÿ8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÿ™¢§ûÿÿÿÿ8ë¨©†•-
+gsquid:S1192"FDefine a constant instead of duplicating this literal "alpha" 3 times.(¡ûûìüÿÿÿÿ8ë¨©†•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ƒ¯€Ü8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(áá„üÿÿÿÿ8ë¨©†•-
+ysquid:S1450"XRemove the "container" field and declare it as a local variable in the relevant methods.(÷½¡ÿÿÿÿÿ8ë¨©†•-
+bsquid:UselessImportCheck"4Remove this unused import 'android.app.AlertDialog'.(ª½øşüÿÿÿÿ8ë¨©†•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(–¿€åÿÿÿÿÿ8ë¨©†•-
+Zsquid:S1155">Use isEmpty() to check whether the collection is empty or not.(Ï’8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ğŒÂ´şÿÿÿÿ8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(À˜Ğ¡şÿÿÿÿ8ë¨©†•-
+xsquid:S1450"WRemove the "mChecker" field and declare it as a local variable in the relevant methods.(´ŞÊıÿÿÿÿ8ë¨©†•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ğ®ûäşÿÿÿÿ8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(À˜Ğ¡şÿÿÿÿ8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(áá„üÿÿÿÿ8ë¨©†•-
+Dsquid:S1172"(Remove this unused method parameter "b".(ıëÄ’8ë¨©†•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ğŒÂ´şÿÿÿÿ8ë¨©†•-
+Hsquid:S1481"'Remove this unused "gd" local variable.(»‚İ•úÿÿÿÿ8ë¨©†•-
+:squid:S2119"Save and re-use this "Random".(¡Å”¦8ë¨©†•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¾Ÿü¤8ë¨©†•-

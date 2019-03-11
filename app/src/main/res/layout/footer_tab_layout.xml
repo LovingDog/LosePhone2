@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="48dp"
     android:gravity="center_vertical"
     android:orientation="vertical">
 
@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:layout_centerInParent="true"
         android:orientation="horizontal"
         android:paddingTop="3dp">
 
@@ -45,4 +46,16 @@
             android:textColor="@color/white"
             android:textSize="14sp" />
     </RadioGroup>
-</LinearLayout>
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:background="@mipmap/circle_publish"/>
+    <ImageView
+        android:id="@+id/iv_add"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_centerInParent="true"
+        android:background="@mipmap/icon_add"/>
+</RelativeLayout>

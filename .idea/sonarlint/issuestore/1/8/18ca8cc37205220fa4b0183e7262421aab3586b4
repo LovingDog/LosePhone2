@@ -1,0 +1,9 @@
+
+Csquid:S1068"/Remove this unused "screenWidth" private field.(ºâ÷1
+Jsquid:S1068"0Remove this unused "screenHeight" private field.(óúæûÿÿÿÿ
+?squid:S1068"*Remove this unused "radial" private field.(‰ªˆº
+nsquid:S1450"ZRemove the "screenWidth" field and declare it as a local variable in the relevant methods.(ºâ÷1
+usquid:S1450"[Remove the "screenHeight" field and declare it as a local variable in the relevant methods.(óúæûÿÿÿÿ
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¼óÅæüÿÿÿÿ
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ôï¦ıÿÿÿÿ
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ºŸ»Î

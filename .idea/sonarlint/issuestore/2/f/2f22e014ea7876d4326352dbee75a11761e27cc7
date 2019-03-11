@@ -1,0 +1,8 @@
+
+zsquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(³ψ—ζψÿÿÿÿ8κύΨ•-
+psquid:S3008"ORename this field "DESC" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(’»¶όÿÿÿÿ8κύΨ•-
+lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(ύή³‹ωÿÿÿÿ8κύΨ•-
+Dsquid:S1148"#Use a logger to log this exception.(€ΙΤ…ύÿÿÿÿ8κύΨ•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ή²·ζ8κύΨ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(νΐ‘φψÿÿÿÿ8κύΨ•-
+zsquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(τ›Σνόÿÿÿÿ8κύΨ•-

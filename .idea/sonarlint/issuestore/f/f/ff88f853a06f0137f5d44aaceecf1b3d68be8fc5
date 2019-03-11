@@ -1,0 +1,14 @@
+
+Dsquid:S1185"(Remove this method to simply inherit it.(»¶8ü‹·Â-
+Hsquid:S1068",Remove this unused "mIconUrl" private field.(Âëû’8ü‹·Â-
+Hsquid:S1068",Remove this unused "exitTime" private field.(×­±ƒ8ü‹·Â-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ï£Á¶ùÿÿÿÿ8ü‹·Â-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Õ¤³™ıÿÿÿÿ8ü‹·Â-
+Fsquid:S1068"+Remove this unused "enqueue" private field.(é¤8ü‹·Â-
+rsquid:S1450"WRemove the "textView" field and declare it as a local variable in the relevant methods.(ìÊõ"8ü‹·Â-
+Isquid:S1185"(Remove this method to simply inherit it.(ÉÎÍïıÿÿÿÿ8ü‹·Â-
+psquid:UselessImportCheck"BRemove this unused import 'com.example.wanghanp.util.StringUtils'.(Ì£´ƒÿÿÿÿÿ8ü‹·Â-
+rsquid:S1450"QRemove the "dm" field and declare it as a local variable in the relevant methods.(œÅõúÿÿÿÿ8ü‹·Â-
+Isquid:S1185"(Remove this method to simply inherit it.(ÿÄ¥Áøÿÿÿÿ8ü‹·Â-
+Xsquid:UnusedPrivateMethod".Remove this unused private "getIntent" method.(ˆñí¯8ü‹·Â-
+qsquid:S1450"VRemove the "enqueue" field and declare it as a local variable in the relevant methods.(é¤8ü‹·Â-

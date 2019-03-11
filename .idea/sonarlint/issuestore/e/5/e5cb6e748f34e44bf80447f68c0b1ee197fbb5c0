@@ -1,0 +1,6 @@
+
+squid:S1845"gRename field "DATABASE" to prevent any misunderstanding/clash with field "database" defined on line 20.(˜‘³Ìüÿÿÿÿ
+Asquid:S1068"'Remove this unused "TAG" private field.(ôÖæÿÿÿÿÿ
+@squid:S1481"&Remove this unused "a" local variable.(ÏÑÏ‡øÿÿÿÿ
+Lsquid:S2589"7Remove this expression which always evaluates to "true"(íÒÖŒ
+Osquid:S1854"5Remove this useless assignment to local variable "a".(ÏÑÏ‡øÿÿÿÿ

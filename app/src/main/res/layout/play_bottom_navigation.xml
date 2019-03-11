@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_bottom_nav_container"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="50dp"
     android:background="@color/white"
     android:clickable="true">
 
@@ -31,7 +31,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="50dp"
         android:layout_below="@id/list_progress_container"
         android:layout_toLeftOf="@+id/list_list"
         android:paddingBottom="@dimen/activity_default_margin_half_s"
@@ -46,10 +46,11 @@
 
         <com.example.wanghanp.myview.media.PlayView
             android:id="@+id/list_play"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="25dp"
+            android:layout_centerVertical="true"
             android:rotation="180"
             app:radius="20dp"
             android:layout_alignParentRight="true" />
@@ -68,9 +69,7 @@
                 android:id="@+id/list_name"
 
                 android:singleLine="true"
-                android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:lines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/text_small_s" />
@@ -89,15 +88,19 @@
 
     <ImageButton
         android:id="@+id/list_list"
-        android:layout_width="32dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
+        android:layout_width="20dp"
+        android:layout_height="22dp"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="3dp"
         android:background="#00ffffff"
-        android:scaleX="0.7"
-        android:scaleY="0.8"
+        android:layout_marginRight="5dp"
         android:src="@mipmap/ic_play_list"
-        android:tint="@color/white_d_d"
-        android:layout_alignParentRight="true" />
+        android:tint="@color/white_d_d" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/text_gray"/>
 
 </RelativeLayout>

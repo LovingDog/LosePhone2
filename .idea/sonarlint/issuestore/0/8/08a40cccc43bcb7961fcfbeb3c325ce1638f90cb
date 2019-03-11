@@ -1,0 +1,10 @@
+
+rsquid:S1450"]Remove the "mCommonAdapter" field and declare it as a local variable in the relevant methods.(ŒİÄµ
+esquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(×ö³–úÿÿÿÿ
+`squid:UselessImportCheck"9Remove this unused import 'android.os.PersistableBundle'.(Ñƒ¨’øÿÿÿÿ
+N"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(ºÖ
+`squid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(ºÖ
+gsquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ïáş»
+hsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(„×º¯ÿÿÿÿÿ
+S"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(×ö³–úÿÿÿÿ
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Š“‚

@@ -99,4 +99,7 @@
     <color name="rmp_image_default_bg">@color/dark_l_l_l</color>
     <color name="main_rmp_image_filter">@color/white_d_d</color>
     <color name="sheet_detail_image_filter">@color/dark</color>
+
+    <color name="color_bg">#b0000000</color> //作为背景的高级黑
+    <color name="color_gold">#ffda53</color> //作为字体的土豪金
 </resources>

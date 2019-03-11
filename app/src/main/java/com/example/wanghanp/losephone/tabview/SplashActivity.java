@@ -49,7 +49,6 @@ public class SplashActivity extends Activity {
 
     private View container;
     private boolean animComplete;
-    private boolean initComplete;
     private MediaManager mediaManager;
     private DBMusicocoController dbController;
     private PermissionsChecker mChecker;
@@ -59,7 +58,7 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
 //        if (ActivityManager.getInstance().getActivity(SplashActivity.class.getName()) != null) {
-//            // 应用已经启动并未被杀死，直接启动 MainActivity
+//            // 应用已经启动并未被杀死，直接启动 BaiduSpeakMainActivity
 //            startMainActivity();
 //            return;
 //        }
@@ -68,13 +67,14 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.splash_activity);
 //        checkPermission();
         initCheckPermission();
+//        ActivityManager.getInstance().addActivity(SplashActivity);
     }
 
 
     private void initCheckPermission() {
         mChecker = new PermissionsChecker(this);
         String[] graint = new String[] { Manifest.permission.CAMERA ,Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION};
+                ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.WAKE_LOCK};
         if (mChecker.lacksPermissions(graint)) {
             Intent intent = new Intent(SplashActivity.this, PermissionsActivity.class);
             intent.putExtra(PermissionsActivity.EXTRA_PERMISSIONS, graint);
@@ -85,8 +85,8 @@ public class SplashActivity extends Activity {
     }
 
     private void initCreateView() {
-        initViews();
 
+        initViews();
         mediaManager = MediaManager.getInstance();
         dbController = new DBMusicocoController(this, true);
         initDataAndStartService();
@@ -108,7 +108,7 @@ public class SplashActivity extends Activity {
                         getResources().getColor(R.color.colorPrimary),
                         getResources().getColor(R.color.colorPrimaryDark)
                 });
-        container.setBackground(gd);
+//        container.setBackground(gd);
         container.setClickable(false);
 
         ts = new TextView[]{
@@ -179,9 +179,9 @@ public class SplashActivity extends Activity {
         final ImageView image = (ImageView) findViewById(R.id.splash_logo);
         final TextView name = (TextView) findViewById(R.id.splash_name);
 
-        ValueAnimator alpha = ObjectAnimator.ofFloat(image, "alpha", 0.0f, 1.0f);
+        ValueAnimator alpha = ObjectAnimator.ofFloat(image, "alpha", 0.0f, 0.7f);
         alpha.setDuration(1000);
-        ValueAnimator alphaN = ObjectAnimator.ofFloat(name, "alpha", 0.0f, 1.0f);
+        ValueAnimator alphaN = ObjectAnimator.ofFloat(name, "alpha", 0.0f, 0.7f);
         alphaN.setDuration(1000);
         ValueAnimator tranY = ObjectAnimator.ofFloat(image, "translationY", -image.getHeight() / 3, 0);
         tranY.setDuration(1000);
@@ -194,14 +194,11 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onAnimationEnd(Animator animation) {
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (initComplete) {
-                            startMainActivity();
-                        } else {
-                            animComplete = true;
-                        }
+                            startOrFinish(animComplete);
                     }
                 });
             }
@@ -256,7 +253,7 @@ public class SplashActivity extends Activity {
 
             @Override
             protected void onPostExecute(Boolean b) {
-                startOrFinish(b);
+                startOrFinish(animComplete);
             }
         }.execute();
 
@@ -265,10 +262,10 @@ public class SplashActivity extends Activity {
     // 媒体库为空退出，否则启动主 Activity
     private void startOrFinish(Boolean b) {
             if (animComplete) {
+                startMainActivity();
             } else {
-                initComplete = true;
+                animComplete = true;
             }
-        startMainActivity();
     }
 
     // 准备数据
@@ -281,6 +278,7 @@ public class SplashActivity extends Activity {
         initAppDataIfNeed();
 
         //   耗时，启动服务之前先准备好数据
+        stopService();
         startService();
         startService(new Intent(SplashActivity.this, SaveStateService.class));
         return true;
@@ -323,6 +321,10 @@ public class SplashActivity extends Activity {
      */
     protected void startService() {
         PlayServiceManager.startPlayService(this);
+    }
+
+    protected void stopService(){
+        PlayServiceManager.stopPlayService(this);
     }
 
     private void startMainActivity() {

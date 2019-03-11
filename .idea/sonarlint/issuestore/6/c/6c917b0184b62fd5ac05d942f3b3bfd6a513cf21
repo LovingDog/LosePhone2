@@ -1,0 +1,6 @@
+
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(•¹‘‘8«ªß¢-
+bsquid:S1192"FDefine a constant instead of duplicating this literal "alarm" 9 times.(ÂÕûÞ8«ªß¢-
+ssquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(üƒ¦íýÿÿÿÿ8«ªß¢-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ÙìÓ§úÿÿÿÿ8«ªß¢-
+Dsquid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ8«ªß¢-

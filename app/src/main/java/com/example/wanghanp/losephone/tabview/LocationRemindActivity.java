@@ -12,8 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.amap.api.maps.model.Text;
-import com.amap.api.services.help.Tip;
 import com.example.wanghanp.db.LocationController;
 import com.example.wanghanp.db.modle.LocationInfo;
 import com.example.wanghanp.losephone.R;

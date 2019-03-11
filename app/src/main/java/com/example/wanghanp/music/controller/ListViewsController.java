@@ -194,7 +194,7 @@ public class ListViewsController implements
                 Song s = new Song(info.getData());
 //                songOperation.removeSongFromCurrentPlayingSheet(null, s);
 
-                // PlayListAdapter 在 MainActivity 和 PlayActivity 中都有，所以需要发送广播通知 MainActivity 更新
+                // PlayListAdapter 在 BaiduSpeakMainActivity 和 PlayActivity 中都有，所以需要发送广播通知 BaiduSpeakMainActivity 更新
                 // 【我的歌单】 列表
                 BroadcastManager.getInstance().sendBroadcast(activity, BroadcastManager.FILTER_MY_SHEET_UPDATE, null);
 

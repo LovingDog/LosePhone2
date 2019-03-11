@@ -1,0 +1,30 @@
+
+rsquid:S1450"VRemove the "mParam2" field and declare it as a local variable in the relevant methods.(¡ˆ€ 8ãğæØ•-
+Dsquid:S1185"(Remove this method to simply inherit it.(ˆÏ€¶8ãğæØ•-
+gsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(ÜŸ•8ãğæØ•-
+Ssquid:S1135"2Complete the task associated to this TODO comment.(ßíŠÿÿÿÿÿ8ãğæØ•-
+Jsquid:S1068".Remove this unused "mMapEnable" private field.(Áüƒï8ãğæØ•-
+Ksquid:S1068"/Remove this unused "mAlarmClock" private field.(•ıÌ¤8ãğæØ•-
+[squid:UnusedPrivateMethod"1Remove this unused private "checkeEnable" method.(®Ñ˜ˆ8ãğæØ•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(À´‘À8ãğæØ•-
+_squid:S1155">Use isEmpty() to check whether the collection is empty or not.(à–ş¤ıÿÿÿÿ8ãğæØ•-
+rsquid:S1450"VRemove the "mParam1" field and declare it as a local variable in the relevant methods.(•Íï‘8ãğæØ•-
+\squid:S1068";Remove this unused "MESSAGE_REFRESH_CONFIRM" private field.(ÛÛÏôşÿÿÿÿ8ãğæØ•-
+Psquid:S1068"/Remove this unused "mSafeEnable" private field.(”ºÇúûÿÿÿÿ8ãğæØ•-
+Osquid:S1068"3Remove this unused "mElectricEnable" private field.(ÙƒĞÔ8ãğæØ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(şì©äıÿÿÿÿ8ãğæØ•-
+Ssquid:S1135"2Complete the task associated to this TODO comment.(ÜûŠ—øÿÿÿÿ8ãğæØ•-
+Lsquid:S1068"0Remove this unused "mMusicEnable" private field.(…Ô½î8ãğæØ•-
+Gsquid:S1068"+Remove this unused "mParam1" private field.(•Íï‘8ãğæØ•-
+Isquid:S1185"(Remove this method to simply inherit it.(Ç™²“øÿÿÿÿ8ãğæØ•-
+U"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(ÜŸ•8ãğæØ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ÙŸ•ºüÿÿÿÿ8ãğæØ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(áíüÈùÿÿÿÿ8ãğæØ•-
+nsquid:S3776"RRefactor this method to reduce its Cognitive Complexity from 23 to the 15 allowed.(§Ì©8ãğæØ•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(“şÓ‡8ãğæØ•-
+Gsquid:S1068"+Remove this unused "mParam2" private field.(¡ˆ€ 8ãğæØ•-
+Nsquid:S1135"2Complete the task associated to this TODO comment.(‡‚ùˆ8ãğæØ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(–¶âùÿÿÿÿ8ãğæØ•-
+~squid:UselessImportCheck"PRemove this unused import 'com.example.wanghanp.base.preference.BasePreference'.(ÛÓ•»øÿÿÿÿ8ãğæØ•-
+Ssquid:S1135"2Complete the task associated to this TODO comment.(ğï¢öúÿÿÿÿ8ãğæØ•-
+xsquid:UselessImportCheck"ORemove this unused import 'com.example.wanghanp.alarm.AlarmLockScreenActivity'.(ˆ¿åØ8íÍçØ•-

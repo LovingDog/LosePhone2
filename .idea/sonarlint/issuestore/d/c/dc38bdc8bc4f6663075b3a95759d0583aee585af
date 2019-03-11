@@ -1,0 +1,26 @@
+
+jsquid:UnusedPrivateMethod"@Remove this unused private "showMissingPermissionDialog" method.(Â»ÆÝ8Ð‚£¹•-
+hsquid:S1192"GDefine a constant instead of duplicating this literal "alarm" 18 times.(‚ˆÖ²úÿÿÿÿ8Ð‚£¹•-
+csquid:S1192"GDefine a constant instead of duplicating this literal "cancel" 3 times.(Ï¡¸—8Ð‚£¹•-
+Nsquid:S1068"-Remove this unused "lazylevel" private field.(áÍ¡Ÿþÿÿÿÿ8Ð‚£¹•-
+Csquid:S1068"'Remove this unused "tag" private field.(šàÆ¯8Ð‚£¹•-
+Fsquid:S1068"%Remove this unused "A" private field.(¼šœŽûÿÿÿÿ8Ð‚£¹•-
+Fsquid:S1068"%Remove this unused "B" private field.(¶ÈÀýÿÿÿÿÿ8Ð‚£¹•-
+ysquid:S1450"XRemove the "lazylevel" field and declare it as a local variable in the relevant methods.(áÍ¡Ÿþÿÿÿÿ8Ð‚£¹•-
+nsquid:S1450"RRemove the "tag" field and declare it as a local variable in the relevant methods.(šàÆ¯8Ð‚£¹•-
+|squid:S1450"[Remove the "alarmManager" field and declare it as a local variable in the relevant methods.(ëèùìøÿÿÿÿ8Ð‚£¹•-
+squid:S1450"^Remove the "mLocationOption" field and declare it as a local variable in the relevant methods.(¶îºøúÿÿÿÿ8Ð‚£¹•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ÑÚ˜Ÿ8Ð‚£¹•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(éØ»Úûÿÿÿÿ8Ð‚£¹•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ë–ýøýÿÿÿÿ8Ð‚£¹•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(“ú×›8Ð‚£¹•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(„Â´èüÿÿÿÿ8Ð‚£¹•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ŒÃêäúÿÿÿÿ8Ð‚£¹•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(†…¯à8Ð‚£¹•-
+Xsquid:S2589"7Remove this expression which always evaluates to "true"(šû¶Œúÿÿÿÿ8Ð‚£¹•-
+Esquid:S1172")Remove this unused method parameter "id".(–’½ä8Ð‚£¹•-
+Jsquid:S1172".Remove this unused method parameter "content".(Â»ÆÝ8Ð‚£¹•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¦Œœ¢8Ð‚£¹•-
+nsquid:S00116"LRename this field "A" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¼šœŽûÿÿÿÿ8Ð‚£¹•-
+nsquid:S00116"LRename this field "B" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¶ÈÀýÿÿÿÿÿ8Ð‚£¹•-
+Dsquid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ8Ð‚£¹•-

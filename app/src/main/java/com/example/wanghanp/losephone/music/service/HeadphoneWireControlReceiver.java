@@ -25,7 +25,7 @@ public class HeadphoneWireControlReceiver extends BroadcastReceiver {
 //            return;
 //        }
 //
-//        IPlayControl control = MainActivity.getControl();
+//        IPlayControl control = BaiduSpeakMainActivity.getControl();
 //        if (control == null) {
 //            return;
 //        }

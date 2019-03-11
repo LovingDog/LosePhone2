@@ -1,0 +1,26 @@
+
+Tsquid:S1068":Remove this unused "isPlayEnhancementMusic" private field.(›… ïýÿÿÿÿ
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(€Å¸ã
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(úÒÐ¯
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¤€µ‚
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(í†´™
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(æöýÍùÿÿÿÿ
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Êþÿò
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(øéø€þÿÿÿÿ
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(øéø€þÿÿÿÿ
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(øéø€þÿÿÿÿ
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(øéø€þÿÿÿÿ
+`squid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(±¯€¤
+Lsquid:S1135"2Complete the task associated to this TODO comment.(ÕÌ®þÿÿÿÿ
+Lsquid:S1135"2Complete the task associated to this TODO comment.(ÕÌ®þÿÿÿÿ
+Lsquid:S1135"2Complete the task associated to this TODO comment.(ÕÌ®þÿÿÿÿ
+Dsquid:S1172"/Remove this unused method parameter "activity".(ÐØþŸ
+Zsquid:S2147"ECombine this catch with the one at line 224, which has the same body.(ï­£Ä
+usquid:S00115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(ß›ùÖøÿÿÿÿ
+[squid:S1858"F"uri" is already a string, there's no need to call "toString()" on it.(†•‡‘
+psquid:S00120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(í‹ç©
+Ssquid:UselessImportCheck",Remove this unused import 'android.net.Uri'.(òêû‘ýÿÿÿÿ
+Zsquid:UselessImportCheck"3Remove this unused import 'android.text.TextUtils'.(û˜½Õøÿÿÿÿ
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ

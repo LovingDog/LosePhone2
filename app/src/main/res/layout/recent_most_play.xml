@@ -22,14 +22,14 @@
     <FrameLayout
         android:id="@+id/rmp_container"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="@dimen/rmp_content_height">
 
         <ImageView
             android:id="@+id/rmp_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/default_album" />
+            android:scaleType="centerCrop"/>
 
         <RelativeLayout
             android:id="@+id/rmp_info_container"
@@ -53,9 +53,7 @@
                     android:id="@+id/rmp_info_name"
 
                     android:singleLine="true"
-                    android:ellipsize="marquee"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:lines="1"
 
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

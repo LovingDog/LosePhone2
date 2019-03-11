@@ -1,15 +1,12 @@
 package com.example.wanghanp.losephone;
 
-import android.Manifest;
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.GradientDrawable;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -22,20 +19,14 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -44,56 +35,42 @@ import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps.LocationSource;
-import com.bumptech.glide.Glide;
+import com.example.wanghanp.alarm.AlarmInfo;
+import com.example.wanghanp.alarm.AlarmInfoDao;
+import com.example.wanghanp.alarm.ScreenBroadcastListener;
+import com.example.wanghanp.alarm.ScreenManager;
+import com.example.wanghanp.baiduspeak.SpeakUtils;
 import com.example.wanghanp.base.UploadContract;
 import com.example.wanghanp.base.bean.TakePhotoBean;
 import com.example.wanghanp.base.interfacelistener.ContentUpdatable;
 import com.example.wanghanp.base.interfacelistener.OnServiceConnect;
 import com.example.wanghanp.base.interfacelistener.OnUpdateStatusChanged;
 import com.example.wanghanp.db.DBMusicocoController;
-import com.example.wanghanp.losephone.Shake.contract.UploadImgPresenter;
-import com.example.wanghanp.losephone.Shake.contract.adapter.BannerAdapter;
 import com.example.wanghanp.losephone.aidl.IPlayControl;
 import com.example.wanghanp.losephone.camera.CameraManager;
 import com.example.wanghanp.losephone.manager.BroadcastManager;
 import com.example.wanghanp.losephone.manager.MediaManager;
 import com.example.wanghanp.losephone.manager.PlayServiceManager;
-import com.example.wanghanp.losephone.map.MapViewFragment;
 import com.example.wanghanp.losephone.music.service.play.PlayServiceConnection;
-import com.example.wanghanp.losephone.service.SaveStateService;
-import com.example.wanghanp.losephone.service.SlideSettings;
+import com.example.wanghanp.losephone.tabview.BlankFragment;
 import com.example.wanghanp.losephone.tabview.SettingFragment;
-import com.example.wanghanp.losephone.tabview.ShowFunFragment;
 import com.example.wanghanp.music.controller.BottomNavigationController;
-import com.example.wanghanp.myview.ShowPhotosActivity;
-import com.example.wanghanp.myview.ZoomImageView;
 import com.example.wanghanp.permissioncheck.PermissionsActivity;
 import com.example.wanghanp.permissioncheck.PermissionsChecker;
 import com.example.wanghanp.receiver.ScreenListener;
 import com.example.wanghanp.receiver.SensorListener;
-import com.example.wanghanp.util.ColorUtils;
-import com.example.wanghanp.util.MobileInfo;
-import com.zhy.adapter.recyclerview.CommonAdapter;
-import com.zhy.adapter.recyclerview.MultiItemTypeAdapter;
-import com.zhy.adapter.recyclerview.base.ViewHolder;
+import com.example.wanghanp.service.LiveService;
+import com.example.wanghanp.service.LongRunningService;
+import com.example.wanghanp.util.ConsUtils;
+import com.example.wanghanp.util.StringUtils;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -101,7 +78,7 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SensorEventListener,
-        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener, UploadContract.UploadView, OnServiceConnect ,ContentUpdatable {
+        SensorListener.PowerConnectionListener, CameraManager.RemoveMoreFilesListener, UploadContract.UploadView, OnServiceConnect ,ContentUpdatable,View.OnClickListener {
 
     private float[] gravity = new float[3];   //重力在设备x、y、z轴上的分量
     private float[] motion = new float[3];  //过滤掉重力后，加速度在x、y、z上的分量
@@ -129,23 +106,17 @@ public class MainActivity extends AppCompatActivity
     TextView footer_mine;
     @InjectView(R.id.footer_rb_msg)
     TextView footer_msg;
-    @InjectView(R.id.rmp_container)
-    FrameLayout mContainer;
-    @InjectView(R.id.rmp_info_container)
-    RelativeLayout mInfoContainer;
-    @InjectView(R.id.rmp_info_name)
-    TextView mName;
+    @InjectView(R.id.iv_add)
+    ImageView mAddClock;
     //    @InjectView(R.id.container)
 //    FrameLayout mFrameLayout;
     public boolean mShowSafeBt = false;
 
     private boolean mCanTakePhoto;
-    private MapViewFragment mMapViewFragment;
-    private FragmentTransaction mFragmentTransaction;
     private int mBackUpTime = 50;
     private int mLocakScreenOriState;
     private int mSpanCount = 10;
-    private ShowFunFragment mShowFunFragment;
+    private BlankFragment mShowFunFragment;
     private SettingFragment mSettingFragment;
     private boolean mIsServiceRunning;
     private PermissionsChecker mChecker;
@@ -156,21 +127,40 @@ public class MainActivity extends AppCompatActivity
     private PlayServiceConnection sServiceConnection;
     protected IPlayControl control;
     private DBMusicocoController dbController;
-    private BroadcastReceiver mySheetDataUpdateReceiver;
+    private double longtitude;
+    private double latitude;
+    private SpeakUtils mSpeak;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSpeak =  new SpeakUtils(this);
+
+//        listener = new NotiftLocationListener();
+//        mLocationClient.registerLocationListener(listener);
+        AlarmInfoDao alarmInfoDao = new AlarmInfoDao(MainActivity.this);
+        for (AlarmInfo alarmInfo1:alarmInfoDao.getAllInfo()) {
+            if (alarmInfo1.getLocation() != null) {
+                longtitude = Double.parseDouble(alarmInfo1.getLat());
+                latitude = Double.parseDouble(alarmInfo1.getLon());
+                break;
+            }
+        }
+
+        Log.d("alarm", "onCreate: latitude = "+latitude+"-"+longtitude);
+//        mNotifyLister.SetNotifyLocation(latitude,longtitude, 40000,mLocationClient.getLocOption().getCoorType());//4个参数代表要位置提醒的点的坐标，具体含义依次为：纬度，经度，距离范围，坐标系类型(gcj02,gps,bd09,bd09ll)
+//        mLocationClient.start();
+
+        //注册监听函数
+//        mLocationClient.registerNotify(mBdNotifyListener);
         ButterKnife.inject(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mCameraView = (SurfaceView) findViewById(R.id.back_surfaceview);
-
-
         playServiceManager = new PlayServiceManager(this);
         mediaManager = MediaManager.getInstance();
 
-        // 单例持有的 Context 为 MainActivity 的，最早调用在此。
+        // 单例持有的 Context 为 BaiduSpeakMainActivity 的，最早调用在此。
         broadcastManager = BroadcastManager.getInstance();
         bottomNavigationController = new BottomNavigationController(this, mediaManager);
         dbController = new DBMusicocoController(this, true);
@@ -178,8 +168,7 @@ public class MainActivity extends AppCompatActivity
 
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-        updateColors();
-        initBroadCast();
+//        initBroadCast();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -196,15 +185,59 @@ public class MainActivity extends AppCompatActivity
         });
         initCamera();
         bindService();
-        initSensor();
+//        initSensor();
         registerTimeBroadCast();
+    }
 
+    public boolean isNotificationListenerEnabled(Context context) {
+        Set<String> packageNames = NotificationManagerCompat.getEnabledListenerPackages(this);
+        if (packageNames.contains(context.getPackageName())) {
+            return true;
+        }
+        return false;
+    }
+
+    public void openNotificationListenSettings() {
+        try {
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+            } else {
+                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+            }
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerTimeBroadCast() {
+//        initLiveActivity();
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         MyTimeTickBroaCast myTimeTickBroadCast = new MyTimeTickBroaCast();
         getApplicationContext().registerReceiver(myTimeTickBroadCast, intentFilter);
+        if (!isNotificationListenerEnabled(this)) {
+            openNotificationListenSettings();
+        }
+        startService(new Intent(this, LiveService.class));
+//        initLiveActivity();
+    }
+
+    private void initLiveActivity(){
+        final ScreenManager screenManager = ScreenManager.getInstance(MainActivity.this);
+        ScreenBroadcastListener listener = new ScreenBroadcastListener(this);
+        listener.registerListener(new ScreenBroadcastListener.ScreenStateListener() {
+            @Override
+            public void onScreenOn() {
+                screenManager.finishActivity();
+            }
+
+            @Override
+            public void onScreenOff() {
+                screenManager.startActivity();
+            }
+        });
     }
 
     private void initFragment2() {
@@ -213,7 +246,12 @@ public class MainActivity extends AppCompatActivity
 
         //第一种方式（add），初始化fragment并添加到事务中，如果为null就new一个
         if (mShowFunFragment == null) {
-            mShowFunFragment = ShowFunFragment.newInstance(mPath, "");
+            mShowFunFragment = BlankFragment.newInstance("", "", new BlankFragment.OnbackPressListener() {
+                @Override
+                public void onbackPress() {
+
+                }
+            });
             transaction.add(R.id.content, mShowFunFragment);
         }
         //隐藏所有fragment
@@ -222,6 +260,10 @@ public class MainActivity extends AppCompatActivity
         transaction.show(mShowFunFragment);
         //提交事务
         transaction.commit();
+    }
+
+    public void speak(){
+        mSpeak.speak("小米之家 欢迎你");
     }
 
     private void initFragment3() {
@@ -252,18 +294,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @OnClick({R.id.footer_rb_msg, R.id.footer_rb_mine})
+    @OnClick({R.id.footer_rb_msg, R.id.footer_rb_mine,R.id.iv_add})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.footer_rb_msg:
 //                footer_msg.setSelected(true);
 //                footer_mine.setSelected(false);
-                initFragment2();
+                initFragment3();
                 break;
             case R.id.footer_rb_mine:
 //                footer_msg.setSelected(false);
 //                footer_mine.setSelected(true);
-                initFragment3();
+                initFragment2();
+                break;
+            case R.id.iv_add:
+                if (mSettingFragment != null) {
+                    mSettingFragment.onClick();
+                }
                 break;
         }
     }
@@ -276,7 +323,7 @@ public class MainActivity extends AppCompatActivity
 
     private void initTakePhotosAdpater(List<TakePhotoBean> mPath) {
         if (mShowFunFragment != null && mShowFunFragment.isAdded() && mPath.size() > 0) {
-            mShowFunFragment.initTakePhotosAdpater(mPath);
+//            mShowFunFragment.initTakePhotosAdpater(mPath);
         }
     }
 
@@ -345,7 +392,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
         initTakePhotosAdpater(mPath);
-        initFragment2();
+        initFragment3();
     }
 
     private void takeFrontPhoto2() {
@@ -369,7 +416,6 @@ public class MainActivity extends AppCompatActivity
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
-
 
     private void initBroadCast() {
         mSensorLisener = new SensorListener(MainActivity.this, this);
@@ -423,7 +469,7 @@ public class MainActivity extends AppCompatActivity
             bottomNavigationController.update(null, null);
         }
         mHasFocus = true;
-        mCameramanager.setmSafeTakePhotos(true);
+//        mCameramanager.setmSafeTakePhotos(true);
     }
 
     @Override
@@ -484,11 +530,31 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStop() {
+        // TODO Auto-generated method stub
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
+//        ArrayList<AlarmInfo> list = getAllAlarmLocationInfo();
+//        for (AlarmInfo alarminfo :
+//                list) {
+//            if (StringUtils.isReal(alarminfo.getLocation())){
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("location_alarminfo", alarminfo);
+//                bundle.setClassLoader(AlarmInfo.class.getClassLoader());
+                Intent intent = new Intent(getApplicationContext(),LongRunningService.class);
+                startService(intent);
+                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+//                return;
+//            }
+//        }
+
         super.onDestroy();
         try {
-            mSensorLisener.unRegisterPowerConnection();
-            mSensorManager.unregisterListener(this);
+//            mSensorLisener.unRegisterPowerConnection();
+//            mSensorManager.unregisterListener(this);
 //        mSensorManager.unregisterListener(listener);
           bottomNavigationController.paly(false);
             if (mScreenStateListener != null) {
@@ -501,6 +567,21 @@ public class MainActivity extends AppCompatActivity
             mCameramanager.ondestroy();
         }
         unbindService();
+    }
+
+    private ArrayList<AlarmInfo> getAllAlarmLocationInfo(){
+        AlarmInfoDao alarmInfoDao = new AlarmInfoDao(this);
+        ArrayList<AlarmInfo> list = (ArrayList<AlarmInfo>) alarmInfoDao.getAllInfo();
+        ArrayList<AlarmInfo> locationList = new ArrayList<>();
+        if (list != null && list.size() > 0) {
+            for (AlarmInfo alarminfo :
+                    list) {
+                if (StringUtils.isReal(alarminfo.getLocation())) {
+                    locationList.add(alarminfo);
+                }
+            }
+        }
+        return locationList;
     }
 
     @Override
@@ -664,12 +745,39 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("alarm","onActivityResult.ring = ");
+
         super.onActivityResult(requestCode, resultCode, data);
+        if (data == null) {
+            return;
+        }
         if (requestCode == 102 && resultCode == PermissionsActivity.PERMISSIONS_GRANTED) {
             initSensor();
             initCamera();
             registerTimeBroadCast();
             bindService();
+        }else if (requestCode == ConsUtils.SET_ALARM_DONE) {
+            Bundle bundle=data.getExtras();
+            if (bundle != null) {
+                AlarmInfo alarmInfo=(AlarmInfo)bundle.getSerializable("alarm");
+                Log.d("alarm","onActivityResult.ring = "+alarmInfo.getRing());
+                mSettingFragment.addAlarmInfo(true);
+            }
+        }else if (requestCode == ConsUtils.SET_LOCATION_ALARM_DONE) {
+            Bundle bundle=data.getExtras();
+            Log.d("wanghp", "onActivityResult: bundle = "+bundle);
+            mSettingFragment.addAlarmInfo(false);
+            if (bundle != null) {
+                AlarmInfo alarmInfo=(AlarmInfo)bundle.getSerializable("alarm");
+                longtitude = Double.parseDouble(alarmInfo.getLon());
+                latitude = Double.parseDouble(alarmInfo.getLat());
+                Bundle bundle1=new Bundle();
+                bundle1.putSerializable("location_alarminfo", alarmInfo);
+                bundle1.setClassLoader(AlarmInfo.class.getClassLoader());
+                Intent intent = new Intent(this,LongRunningService.class);
+                intent.putExtra("bundle",bundle1);
+                startService(intent);
+            }
         }
     }
 
@@ -717,45 +825,18 @@ public class MainActivity extends AppCompatActivity
         List<ActivityManager.RunningServiceInfo> lists = activityManager.getRunningServices(Integer.MAX_VALUE);
         for (ActivityManager.RunningServiceInfo runningService :
                 lists) {
-            if (runningService.service.getClassName().equals("com.example.wanghanp.losephone.service.SaveStateService")) {
+            if (runningService.service.getClassName().equals("com.example.wanghanp.service.LongRunningService")) {
                 mIsServiceRunning = true;
             } else {
                 mIsServiceRunning = false;
             }
-//            Log.d("wanghp007", "onReceive: mIsServiceRunning = " +mIsServiceRunning);
+            Log.d("alarm", "onReceive: mIsServiceRunning = " +mIsServiceRunning+" &&name = "+runningService.service.getClassName());
 //            Toast.makeText(getApplicationContext(),"Time_tick_mIsServiceRunning:"+mIsServiceRunning,Toast.LENGTH_SHORT).show();
             if (!mIsServiceRunning) {
-                startService(new Intent(MainActivity.this, SaveStateService.class));
+                startService(new Intent(MainActivity.this, LongRunningService.class));
             }
         }
     }
-
-    private void updateColors() {
-
-        int[] colors = new int[4];
-        int startC = colors[0];
-        int endC = colors[2];
-
-        GradientDrawable drawable = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{startC, endC});
-        mContainer.setBackground(drawable);
-        drawable.setAlpha(120);
-        int colorFilter = 0;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            colorFilter = getApplicationContext().getColor(R.color.main_rmp_image_filter);
-        } else {
-            colorFilter = getApplicationContext().getResources().getColor(R.color.main_rmp_image_filter);
-        }
-
-        drawable.setColorFilter(colorFilter, PorterDuff.Mode.MULTIPLY);
-        mInfoContainer.setBackground(drawable);
-        int[] cs = ColorUtils.get10WhiteThemeColors(getApplicationContext());
-        int toolbarMainTC = cs[8];
-        mName.setText("自然过度");
-        mName.setShadowLayer(20, 0, 0, toolbarMainTC);
-    }
-
     public void play() {
         bottomNavigationController.paly(false);
     }
@@ -767,4 +848,6 @@ public class MainActivity extends AppCompatActivity
     public boolean isCheck() {
         return bottomNavigationController.checked();
     }
+
+
 }

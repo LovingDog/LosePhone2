@@ -6,7 +6,6 @@ import com.squareup.okhttp.OkHttpClient;
 
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
@@ -21,13 +20,13 @@ public class RetrofitUtils {
     private RetrofitUtils() {
 
     }
-    HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-        @Override
-        public void log(String message) {
-            //打印retrofit日志
-            Log.i("RetrofitLog","retrofitBack = "+message);
-        }
-    });
+//    HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+//        @Override
+//        public void log(String message) {
+//            //打印retrofit日志
+//            Log.i("RetrofitLog","retrofitBack = "+message);
+//        }
+//    });
 
     public static Retrofit newInstence(String url) {
         mRetrofit = null;

@@ -1,0 +1,85 @@
+
+dsquid:UnusedPrivateMethod"5Remove this unused private "initLiveActivity" method.(ŠÂâÿúÿÿÿÿ8þÀ²¼•-
+asquid:UnusedPrivateMethod"2Remove this unused private "initBroadCast" method.(ÓÙ ²þÿÿÿÿ8þÀ²¼•-
+fsquid:UnusedPrivateMethod"<Remove this unused private "getAllAlarmLocationInfo" method.(÷¯ü¬8þÀ²¼•-
+U"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(ŽºÖ8þÀ²¼•-
+gsquid:S1192"FDefine a constant instead of duplicating this literal "alarm" 6 times.(•é¾Âûÿÿÿÿ8þÀ²¼•-
+ksquid:S1192"JDefine a constant instead of duplicating this literal "wanghp007" 5 times.(¿¯ÓÝüÿÿÿÿ8þÀ²¼•-
+Jsquid:S1068"/Remove this unused "mBackUpTime" private field.(Â¾—V8þÀ²¼•-
+Ysquid:S1068"8Remove this unused "mLocakScreenOriState" private field.(Ž·¸Ôýÿÿÿÿ8þÀ²¼•-
+Msquid:S1068",Remove this unused "mChecker" private field.(´ÞÊýÿÿÿÿ8þÀ²¼•-
+Usquid:S1068"4Remove this unused "broadcastManager" private field.(÷ñ†‚üÿÿÿÿ8þÀ²¼•-
+nsquid:S1871"MThis branch's code block is the same as the block for the branch on line 506.(ê±›Ñüÿÿÿÿ8þÀ²¼•-
+nsquid:S1871"MThis branch's code block is the same as the block for the branch on line 506.(Õó³÷úÿÿÿÿ8þÀ²¼•-
+isquid:S1871"MThis branch's code block is the same as the block for the branch on line 506.(æÎà 8þÀ²¼•-
+isquid:S1871"MThis branch's code block is the same as the block for the branch on line 506.(õœšÿ8þÀ²¼•-
+isquid:S1871"MThis branch's code block is the same as the block for the branch on line 506.(ó´®8þÀ²¼•-
+qsquid:S1450"URemove the "ratioY" field and declare it as a local variable in the relevant methods.(·ÿ§Â8þÀ²¼•-
+usquid:S1450"TRemove the "angle" field and declare it as a local variable in the relevant methods.(Ê¥Ü•ûÿÿÿÿ8þÀ²¼•-
+~squid:S1450"]Remove the "mSensorManager" field and declare it as a local variable in the relevant methods.(Ü†‚µùÿÿÿÿ8þÀ²¼•-
+rsquid:S1450"VRemove the "mSensor" field and declare it as a local variable in the relevant methods.(ÈÆÄè8þÀ²¼•-
+ysquid:S1450"]Remove the "mSensorLisener" field and declare it as a local variable in the relevant methods.(¾²äÞ8þÀ²¼•-
+~squid:S1450"]Remove the "mSurfaceHolder" field and declare it as a local variable in the relevant methods.(ªºÙ¯ÿÿÿÿÿ8þÀ²¼•-
+„squid:S1450"cRemove the "mLocakScreenOriState" field and declare it as a local variable in the relevant methods.(Ž·¸Ôýÿÿÿÿ8þÀ²¼•-
+squid:S1450"`Remove the "mIsServiceRunning" field and declare it as a local variable in the relevant methods.(ÑàÍÎýÿÿÿÿ8þÀ²¼•-
+wsquid:S1450"[Remove the "mediaManager" field and declare it as a local variable in the relevant methods.(Õ…Ö©8þÀ²¼•-
+€squid:S1450"_Remove the "broadcastManager" field and declare it as a local variable in the relevant methods.(÷ñ†‚üÿÿÿÿ8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(þÌ¾’8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(­Þ¼¡8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ï·ÞÈ8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(”Ãˆùùÿÿÿÿ8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ï´ó£8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Žà©¨ÿÿÿÿÿ8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ý™¡Õþÿÿÿÿ8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ý™¡Õþÿÿÿÿ8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ÅÄ”—8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(˜¹íÓ8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(î£­âýÿÿÿÿ8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ò‚ø„8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ÿšÆŒûÿÿÿÿ8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Êþÿò8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(½Î¨˜úÿÿÿÿ8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ô Æ¸8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(½¼¤¿8þÀ²¼•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(½¼¤¿8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(šëÙçýÿÿÿÿ8þÀ²¼•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(™èÕÿûÿÿÿÿ8þÀ²¼•-
+‘squid:S1319"pThe type of the "mList" object should be an interface such as "List" rather than the implementation "ArrayList".(ûø·úùÿÿÿÿ8þÀ²¼•-
+Œsquid:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(ß¼²±8þÀ²¼•-
+bsquid:S1126"AReplace this if-then-else statement by a single return statement.(¡¬÷öûÿÿÿÿ8þÀ²¼•-
+‰"squid:ClassVariableVisibilityCheck"QMake mList a static final constant or non-public and provide accessors if needed.(ûø·úùÿÿÿÿ8þÀ²¼•-
+"squid:ClassVariableVisibilityCheck"WMake mShowSafeBt a static final constant or non-public and provide accessors if needed.(¢Ùñüýÿÿÿÿ8þÀ²¼•-
+Ssquid:S1135"2Complete the task associated to this TODO comment.(» æžÿÿÿÿÿ8þÀ²¼•-
+Nsquid:S1135"2Complete the task associated to this TODO comment.(§¥²8þÀ²¼•-
+Ksquid:S1905"*Remove this unnecessary cast to "Toolbar".(ªü–ýÿÿÿÿ8þÀ²¼•-
+Psquid:S1905"/Remove this unnecessary cast to "DrawerLayout".(ÐÍè¨þÿÿÿÿ8þÀ²¼•-
+Rsquid:S1905"1Remove this unnecessary cast to "NavigationView".(üûÍøÿÿÿÿ8þÀ²¼•-
+Psquid:S1905"/Remove this unnecessary cast to "DrawerLayout".(ÐÍè¨þÿÿÿÿ8þÀ²¼•-
+Psquid:S1905"/Remove this unnecessary cast to "DrawerLayout".(ÐÍè¨þÿÿÿÿ8þÀ²¼•-
+ssquid:S3776"RRefactor this method to reduce its Cognitive Complexity from 36 to the 15 allowed.(¡Ž¯âþÿÿÿÿ8þÀ²¼•-
+nsquid:S3776"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(€·“Ž8þÀ²¼•-
+ksquid:CallToDeprecatedMethod"9Remove this use of "setDrawerListener"; it is deprecated.(ø¶Âßÿÿÿÿÿ8þÀ²¼•-
+ksquid:S00100"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(€·“Ž8þÀ²¼•-
+bsquid:S2142"FEither re-interrupt this method or rethrow the "InterruptedException".(ä ¹€8þÀ²¼•-
+fsquid:S2259"JA "NullPointerException" could be thrown; "mFrontCamera" is nullable here.(¢÷èß8þÀ²¼•-
+Fsquid:S00108")Either remove or fill this block of code.(æÎà 8þÀ²¼•-
+Fsquid:S00108")Either remove or fill this block of code.(ó´®8þÀ²¼•-
+Fsquid:S00108")Either remove or fill this block of code.(õœšÿ8þÀ²¼•-
+Ksquid:S00108")Either remove or fill this block of code.(Õó³÷úÿÿÿÿ8þÀ²¼•-
+Ksquid:S00108")Either remove or fill this block of code.(ê±›Ñüÿÿÿÿ8þÀ²¼•-
+Ksquid:S00108")Either remove or fill this block of code.(Ë¿ˆºùÿÿÿÿ8þÀ²¼•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ù¢÷¬üÿÿÿÿ8þÀ²¼•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(§Ûëè8þÀ²¼•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(õäô8þÀ²¼•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(“–ýþ8þÀ²¼•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ü‘£ê8þÀ²¼•-
+Isquid:S1185"(Remove this method to simply inherit it.(èüù±ùÿÿÿÿ8þÀ²¼•-
+Isquid:S1185"(Remove this method to simply inherit it.(ñ‰ÿÜýÿÿÿÿ8þÀ²¼•-
+ssquid:S00116"VRename this field "footer_mine" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(«ÜŒÉ8þÀ²¼•-
+rsquid:S00116"URename this field "footer_msg" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¿Çîú8þÀ²¼•-
+jsquid:UselessImportCheck"<Remove this unused import 'android.annotation.SuppressLint'.(ÕƒóÏûÿÿÿÿ8þÀ²¼•-
+Dsquid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ8þÀ²¼•-
+Dsquid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ8þÀ²¼•-
+_squid:S1155">Use isEmpty() to check whether the collection is empty or not.(çÕ÷´ýÿÿÿÿ8þÀ²¼•-
+Zsquid:S1155">Use isEmpty() to check whether the collection is empty or not.(•ñ¥À8þÀ²¼•-
+osquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ù ®Íúÿÿÿÿ8þÀ²¼•-

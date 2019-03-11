@@ -1,0 +1,16 @@
+
+dsquid:UnusedPrivateMethod"5Remove this unused private "showNotification" method.(²•¢ñÿÿÿÿÿ8ô×•-
+nsquid:ModifiersOrderCheck"EReorder the modifiers to comply with the Java Language Specification.(½ÿÙ8ô×•-
+bsquid:S1192"FDefine a constant instead of duplicating this literal "alarm" 4 times.(»Îà˜8ô×•-
+tsquid:S1192"SDefine a constant instead of duplicating this literal "location_alarminfo" 3 times.(™Î»™ùÿÿÿÿ8ô×•-
+vsquid:S1450"ZRemove the "mAlarmClock" field and declare it as a local variable in the relevant methods.(•ıÌ¤8ô×•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(‚©‡éüÿÿÿÿ8ô×•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(•¹‘‘8ô×•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(˜¡ºİüÿÿÿÿ8ô×•-
+nsquid:S3776"RRefactor this method to reduce its Cognitive Complexity from 26 to the 15 allowed.(ªĞªÄ8ô×•-
+Dsquid:S1185"(Remove this method to simply inherit it.(Î¢È8ô×•-
+Tsquid:UselessImportCheck"+Remove this unused import 'java.util.Date'.(¸…¼ü8ô×•-
+Ysquid:UselessImportCheck"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ8ô×•-
+Xsquid:UselessImportCheck"/Remove this unused import 'android.os.Handler'.(ûÛ’¡8ô×•-
+jsquid:UselessImportCheck"<Remove this unused import 'android.app.NotificationManager'.(¸˜ùÑûÿÿÿÿ8ô×•-
+Zsquid:S1155">Use isEmpty() to check whether the collection is empty or not.(‰›¥¯8ô×•-

@@ -1,0 +1,14 @@
+
+isquid:S1192"TDefine a constant instead of duplicating this literal "yyyy-MM-dd HH:mm:ss" 3 times.(À¨Ï
+tsquid:S1488"_Immediately return this expression instead of assigning it to the temporary variable "dateStr".(©ÈİÛ
+tsquid:S1488"_Immediately return this expression instead of assigning it to the temporary variable "dateStr".(©ÈİÛ
+ssquid:S1488"_Immediately return this expression instead of assigning it to the temporary variable "timeStr".(µŒ‹W
+ysquid:S1488"_Immediately return this expression instead of assigning it to the temporary variable "dateStr".(ğÒ¥²şÿÿÿÿ
+ssquid:S1488"YImmediately return this expression instead of assigning it to the temporary variable "a".(¼á–ÿÿÿÿÿ
+ssquid:S1488"^Immediately return this expression instead of assigning it to the temporary variable "second".(®âÿù
+Jsquid:S1481"5Remove this unused "simpleDateFormat" local variable.(À¨Ï
+Ysquid:CallToDeprecatedMethod".Remove this use of "getDay"; it is deprecated.(¼á–ÿÿÿÿÿ
+Osquid:S1118":Add a private constructor to hide the implicit public one.(íÍ´¤
+Ysquid:S1854"DRemove this useless assignment to local variable "simpleDateFormat".(À¨Ï
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ
+=squid:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ

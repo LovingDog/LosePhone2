@@ -1,0 +1,13 @@
+
+ksquid:S3027"JPut single-quotes around ':' to use the faster "lastIndexOf(char)" method.(ŞŸ³ìşÿÿÿÿ8å™–¸•-
+ksquid:S3027"JPut single-quotes around ':' to use the faster "lastIndexOf(char)" method.(«Ç”Êşÿÿÿÿ8å™–¸•-
+Psquid:EmptyStatementUsageCheck"Remove this empty statement.(ôŸìúÿÿÿÿ8å™–¸•-
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(ıŞ³‹ùÿÿÿÿ8å™–¸•-
+>squid:S3398"#Move this method into "MyRunnable".(å¯,8å™–¸•-
+Ksquid:S1068"*Remove this unused "mCount" private field.(Œ³´ùÿÿÿÿ8å™–¸•-
+Jsquid:S1068".Remove this unused "mTimeCount" private field.(è³¼8å™–¸•-
+lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(ıŞ³‹ùÿÿÿÿ8å™–¸•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Î‹Èˆùÿÿÿÿ8å™–¸•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(éØ»Úûÿÿÿÿ8å™–¸•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(’°—é8å™–¸•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(…ÌÒûÿÿÿÿ8å™–¸•-

@@ -1,0 +1,10 @@
+
+Hsquid:S2175",A "ArrayList<String>" cannot contain a "int"(ü÷Œº8¢œ¿…î-
+vsquid:S1450"ZRemove the "mChoiceItem" field and declare it as a local variable in the relevant methods.(Öåôà8¢œ¿…î-
+ñsquid:S1186"ÄAdd a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(ÖÓµÇ
+Å"squid:ClassVariableVisibilityCheck"UMake mActivity a static final constant or non-public and provide accessors if needed.(ª·õﬂ
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ñ‚öﬁˇˇˇˇˇ
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ò‚âıˇˇˇˇˇ8ºÓ∏òÉ-
+Ksquid:S1068"/Remove this unused "mChoiceItem" private field.(Öåôà8¢œ¿…î-
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(›â§Ä˝ˇˇˇˇ
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¶â–â¯ˇˇˇˇ8ºÓ∏òÉ-

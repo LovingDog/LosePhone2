@@ -5,16 +5,26 @@ android {
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.example.wanghanp.losephone"
-        minSdkVersion 16
+        minSdkVersion 20
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86_64"
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            //设置so库依赖路径
+            jniLibs.srcDirs = ['libs']
         }
     }
 }
@@ -24,6 +34,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+//    compile 'com.android.support: appcompat-v7:25.1.0'
+//    testCompile 'junit: junit: 4.12'
+
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support:design:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -41,7 +55,11 @@ dependencies {
     compile 'in.srain.cube:ultra-ptr:1.0.11'
 //    compile files('libs/circular-image.jar')
 //    compile files('libs/BaiduLBS_Android.jar')
+    compile 'com.amap.api:3dmap:latest.integration'
+    //定位功能
+    compile 'com.amap.api:location:latest.integration'
+    //搜索功能
+    compile 'com.amap.api:search:latest.integration'
 
-
-    testCompile 'junit:junit:4.12'
+//    testCompile 'junit:junit:4.12'
 }

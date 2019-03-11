@@ -1,0 +1,20 @@
+
+=squid:S1643"Use a StringBuilder instead.(ÍâÇßıÿÿÿÿ8©Ğ•-
+=squid:S1643"Use a StringBuilder instead.(û…Æøÿÿÿÿ8©Ğ•-
+gsquid:S1192"FDefine a constant instead of duplicating this literal "alarm" 4 times.(ıÒşùÿÿÿÿ8©Ğ•-
+Psquid:S1066"/Merge this if statement with the enclosing one.(±•¯©ıÿÿÿÿ8©Ğ•-
+Ksquid:S1066"/Merge this if statement with the enclosing one.(Š¹Ã’8©Ğ•-
+wsquid:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(üø·À8©Ğ•-
+zsquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(ıÚ˜üÿÿÿÿ8©Ğ•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(­±è8©Ğ•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ëãô8©Ğ•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(‘éò8©Ğ•-
+‘squid:S1319"pThe return type of this method should be an interface such as "List" rather than the implementation "ArrayList".(·Ôé¸øÿÿÿÿ8©Ğ•-
+_squid:S2583"CChange this condition so that it does not always evaluate to "true"(üø·À8©Ğ•-
+Xsquid:S2589"7Remove this expression which always evaluates to "true"(Â¤Óùÿÿÿÿ8©Ğ•-
+Xsquid:S2589"7Remove this expression which always evaluates to "true"(Â¤Óùÿÿÿÿ8©Ğ•-
+Xsquid:S2589"7Remove this expression which always evaluates to "true"(Â¤Óùÿÿÿÿ8©Ğ•-
+_squid:S2259"CA "NullPointerException" could be thrown; "cusor" is nullable here.(‡æšÁ8©Ğ•-
+nsquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ş³ã8©Ğ•-
+ssquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ÿ¦êşÿÿÿÿ8©Ğ•-
+Zsquid:S1155">Use isEmpty() to check whether the collection is empty or not.(•ñ¥À8©Ğ•-

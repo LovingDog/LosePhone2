@@ -6,8 +6,11 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- 读写SD卡权限 -->
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -30,15 +33,25 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.EXTERNAL_CONTENT_URI" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"></uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
     <uses-permission android:name="com.example.wanghanp.losephone.permission.ACCESS_PLAY_SERVICE"></uses-permission>
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+
     <permission
         android:name="com.example.wanghanp.losephone.permission.ACCESS_PLAY_SERVICE"
         android:protectionLevel="normal" />
 
     <application
+        android:name="com.example.wanghanp.LocationApplication"
         android:allowBackup="true"
         android:icon="@mipmap/person"
         android:label="@string/app_name"
+        android:excludeFromRecents="true"
+        android:finishOnTaskLaunch="false"
         android:roundIcon="@mipmap/person"
         android:supportsRtl="true"
         android:persistent="true"
@@ -46,23 +59,24 @@
         <activity
             android:name="com.example.wanghanp.losephone.tabview.SplashActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="false"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity"
-
-            android:launchMode="singleInstance"
-            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="3a0ae0a6b3882bfc4b523a21c37365ab"></meta-data>
+
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="KSx0qsf7HpfIzbOE9ZkKA6xGrgzWiGyk" />  <!-- http://lbsyun.baidu.com/apiconsole/key -->
 
         <service android:name="com.amap.api.location.APSService"></service>
         <activity
@@ -75,15 +89,32 @@
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
         <activity android:name=".tabview.SearchLocationActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+        <activity android:name="com.example.wanghanp.losephone.tabview.AddClockActivity"></activity>
+        <activity android:name="com.example.wanghanp.alarm.AddAlarmActivity"></activity>
+        <activity android:name="com.example.wanghanp.alarm.AlarmLockScreenActivity"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" ></activity>
+        <activity android:name="com.example.wanghanp.alarm.location_alarm.LocationAlarmActivity"></activity>
+
+
+
+        <activity android:name="com.example.wanghanp.alarm.LiveActivity"
+            android:theme="@style/myTransparent"></activity>
+        <activity android:name="com.example.wanghanp.baiduspeak.BaiduSpeakMainActivity"></activity>
+        <activity android:name="com.example.wanghanp.baiduspeak.SynthActivity"></activity>
+        <activity android:name="com.example.wanghanp.baiduspeak.MiniActivity"></activity>
+        <activity android:name="com.example.wanghanp.baiduspeak.SaveFileActivity"></activity>
+
         <service
-            android:name=".service.SaveStateService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":service">
-            <intent-filter android:priority="1000">
-                <action android:name="com.example.wanghanp.losephone.service"></action>
-            </intent-filter>
-        </service>
+        android:name=".service.SaveStateService"
+        android:enabled="true"
+        android:exported="true"
+        android:process=":saveservice">
+        <intent-filter android:priority="1000">
+            <action android:name="com.example.wanghanp.losephone.service"></action>
+        </intent-filter>
+    </service>
         <service
             android:name=".music.service.PlayService"
             android:enabled="true"
@@ -93,6 +124,48 @@
             <intent-filter>
                 <action android:name="com.example.wanghanp.losephone.action.PLAY_SERVICE" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </service>
+
+
+        <receiver
+            android:name="com.example.wanghanp.receiver.AlarmReciver"
+            android:process=":newinst">
+            <intent-filter>
+                <action android:name="com.wanghp.RING_ALARM" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.example.wanghanp.receiver.BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.example.wanghanp.service.AlarmRingService"
+            android:enabled="true"
+            android:exported="true" />
+        <!--<service-->
+            <!--android:name="com.example.wanghanp.service.WakeServiceOne"-->
+            <!--android:enabled="true"-->
+            android:exported="true" />
+        <service android:name="com.example.wanghanp.service.LongRunningService"
+            android:priority = "1000"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":longservice">
+        </service>
+        <!-- 声明service组件 -->
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
+        <service
+            android:name="com.example.wanghanp.service.LiveService"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
     </application>

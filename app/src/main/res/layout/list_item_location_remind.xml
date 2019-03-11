@@ -61,8 +61,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
-                android:layout_weight="0"
-                android:background="@mipmap/address_content"/>
+                android:layout_weight="0"/>
             <EditText
                 android:id="@+id/edit_content"
                 android:layout_width="match_parent"
@@ -94,7 +93,6 @@
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:gravity="center"
-            android:background="@color/colorPrimaryDark"
             android:layout_centerVertical="true">
             <Button
                 android:layout_width="25dp"

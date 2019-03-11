@@ -1,0 +1,4 @@
+
+Hsquid:S1481".Remove this unused "fontScale" local variable.(Ü«²üÿÿÿÿ
+Osquid:S1118":Add a private constructor to hide the implicit public one.(ùªÑø
+Wsquid:S1854"=Remove this useless assignment to local variable "fontScale".(Ü«²üÿÿÿÿ

@@ -1,0 +1,5 @@
+
+osquid:S1450"SRemove the "Song" field and declare it as a local variable in the relevant methods.(“ìƒÓ8¸‡£¹•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(‡ö«œüÿÿÿÿ8¸‡£¹•-
+lsquid:S00116"ORename this field "Song" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(“ìƒÓ8¸‡£¹•-
+Dsquid:S1148"#Use a logger to log this exception.(€ÉÔ…ýÿÿÿÿ8¸‡£¹•-

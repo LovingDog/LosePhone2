@@ -1,0 +1,6 @@
+
+Psquid:S2696"6Make the enclosing method "static" or remove this set.(þª˜Âøÿÿÿÿ
+;squid:S3010"&Remove this assignment of "isInitied".(èÃÉÚ
+Isquid:S1068"/Remove this unused "isCheckFile" private field.(ÇÒß¤úÿÿÿÿ
+nsquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(¦é–ƒ
+[squid:S00112"FDefine and throw a dedicated exception instead of using a generic one.(ÃÓ v

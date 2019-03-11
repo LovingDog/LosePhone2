@@ -1,0 +1,7 @@
+
+{squid:S1488"ZImmediately return this expression instead of assigning it to the temporary variable "id".(Ù±¿¶şÿÿÿÿ8“¢ À-
+psquid:S00116"NRename this field "Tag" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·—°ƒûÿÿÿÿ8“¢ À-
+lsquid:S00116"ORename this field "Hour" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(À ³ø8Û«Ò„-
+ssquid:S00116"QRename this field "Minute" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ø•ÕÛùÿÿÿÿ8Û«Ò„-
+vsquid:S00116"TRename this field "LazyLevel" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¦´ì¯ùÿÿÿÿ8Û«Ò„-
+lsquid:S00116"ORename this field "Ring" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ş¤š8Û«Ò„-

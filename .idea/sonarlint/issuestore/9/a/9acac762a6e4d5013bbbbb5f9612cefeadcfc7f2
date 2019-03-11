@@ -1,0 +1,6 @@
+
+esquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(§ëÍİúÿÿÿÿ
+Lsquid:S1135"2Complete the task associated to this TODO comment.(Ú¦Ÿšûÿÿÿÿ
+–squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(§¿èô
+Bsquid:S1185"(Remove this method to simply inherit it.(İßéàúÿÿÿÿ
+esquid:UselessImportCheck">Remove this unused import 'android.support.annotation.IntDef'.(åÕÜÉüÿÿÿÿ

@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/splash_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@mipmap/afternoon"
+    >
 
     <TextView
         android:id="@+id/splash_m"
@@ -157,7 +159,7 @@
         android:layout_marginRight="8dp"
         android:text="@string/app_name"
         android:textColor="@color/white_d_d_d"
-        android:textSize="@dimen/text_middle"
+        android:textSize="@dimen/text_middle_s"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -169,6 +171,7 @@
         android:layout_height="130dp"
         android:layout_marginBottom="0dp"
         android:src="@mipmap/person"
+        android:alpha="0.3"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/splash_c"
         app:layout_constraintHorizontal_bias="0.501"

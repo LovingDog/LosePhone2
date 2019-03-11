@@ -1,0 +1,30 @@
+
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(ë´åİşÿÿÿÿ8ÌÓê¹•-
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(ıŞ³‹ùÿÿÿÿ8ÌÓê¹•-
+squid:S1450"^Remove the "mTopLinealayout" field and declare it as a local variable in the relevant methods.(šÑáÇúÿÿÿÿ8ÌÓê¹•-
+{squid:S1450"_Remove the "mTimerController" field and declare it as a local variable in the relevant methods.(µş¨´8ÌÓê¹•-
+zsquid:S1450"YRemove the "mTitleText" field and declare it as a local variable in the relevant methods.(ÆÅ­–ùÿÿÿÿ8ÌÓê¹•-
+zsquid:S1450"YRemove the "mContainer" field and declare it as a local variable in the relevant methods.(¨õºúşÿÿÿÿ8ÌÓê¹•-
+{squid:S1450"ZRemove the "mBImageView" field and declare it as a local variable in the relevant methods.(Áé‹øÿÿÿÿ8ÌÓê¹•-
+wsquid:S1450"[Remove the "mLabelButton" field and declare it as a local variable in the relevant methods.(ÿŠ¨Í8ÌÓê¹•-
+€squid:S1450"_Remove the "lineLayoutParams" field and declare it as a local variable in the relevant methods.(¼ºÖßúÿÿÿÿ8ÌÓê¹•-
+}squid:S1450"\Remove the "mSubTitleText" field and declare it as a local variable in the relevant methods.(˜Ï€®úÿÿÿÿ8ÌÓê¹•-
+tsquid:S1450"XRemove the "mLineView" field and declare it as a local variable in the relevant methods.(½Šö°8ÌÓê¹•-
+tsquid:S1450"XRemove the "mLockView" field and declare it as a local variable in the relevant methods.(¨¬Ø8ÌÓê¹•-
+|squid:S1450"[Remove the "mFrameLayout" field and declare it as a local variable in the relevant methods.(äâ“ƒúÿÿÿÿ8ÌÓê¹•-
+ysquid:S1450"]Remove the "mRelativeLyout" field and declare it as a local variable in the relevant methods.(·Ÿú8ÌÓê¹•-
+{squid:S1450"ZRemove the "mDateLayout" field and declare it as a local variable in the relevant methods.(“»úùøÿÿÿÿ8ÌÓê¹•-
+usquid:S1450"TRemove the "mTemp" field and declare it as a local variable in the relevant methods.(í»Ÿ›şÿÿÿÿ8ÌÓê¹•-
+psquid:S1450"TRemove the "mText" field and declare it as a local variable in the relevant methods.( —Ğ8ÌÓê¹•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ƒĞäŠ8ÌÓê¹•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¿³ØÆ8ÌÓê¹•-
+fsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(£±Ès8ÌÓê¹•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(€³ï®ûÿÿÿÿ8ÌÓê¹•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(³²¶Šùÿÿÿÿ8ÌÓê¹•-
+Isquid:S1185"(Remove this method to simply inherit it.(º£”úÿÿÿÿ8ÌÓê¹•-
+|squid:S00115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(€–’†ÿÿÿÿÿ8ÌÓê¹•-
+|squid:S00115"ZRename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.(çÿˆáûÿÿÿÿ8ÌÓê¹•-
+nsquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ê”Ãı8ÌÓê¹•-
+nsquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Íşö´8ÌÓê¹•-
+nsquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(–Ôğ³8ÌÓê¹•-
+nsquid:S00117"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(€¯í‰8ÌÓê¹•-

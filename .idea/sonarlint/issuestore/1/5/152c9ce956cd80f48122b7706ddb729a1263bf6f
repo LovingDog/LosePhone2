@@ -1,0 +1,35 @@
+
+8squid:S1643"Use a StringBuilder instead.(Âó€Ç8’š…‘•-
+ssquid:S1450"WRemove the "mBackImg" field and declare it as a local variable in the relevant methods.(á‰’Ü8’š…‘•-
+\squid:UselessImportCheck"4Remove this unused import 'android.widget.CheckBox'.(Ùáb8’š…‘•-
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(µ­ËËùÿÿÿÿ8’š…‘•-
+qsquid:S1450"URemove the "mTitle" field and declare it as a local variable in the relevant methods.(’§¤È8’š…‘•-
+ssquid:S1450"XRemove the "mWeekShow" field and declare it as a local variable in the relevant methods.(µØ­8’š…‘•-
+8squid:S1643"Use a StringBuilder instead.(€ÅÏ’8’š…‘•-
+_squid:HiddenFieldCheck"8Rename "item" which hides the field declared at line 46.(úÁş†8’š…‘•-
+ssquid:S00116"QRename this field "Ringid" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(½ÉÇÎüÿÿÿÿ8’š…‘•-
+Ysquid:UselessImportCheck"0Remove this unused import 'java.util.ArrayList'.(÷‰îƒ8Èİ–‘•-
+Ysquid:UselessImportCheck"+Remove this unused import 'java.util.List'.(Õë±Äøÿÿÿÿ8Èİ–‘•-
+\squid:UselessImportCheck"3Remove this unused import 'android.util.TimeUtils'.(èÛ…û8’š…‘•-
+gsquid:S1192"FDefine a constant instead of duplicating this literal "alarm" 5 times.(¹¦ÉÂùÿÿÿÿ8’š…‘•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.( ’´íøÿÿÿÿ8’š…‘•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ñâ‰õÿÿÿÿÿ8’š…‘•-
+=squid:S1643"Use a StringBuilder instead.(¼÷†âıÿÿÿÿ8’š…‘•-
+Z"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(×“¾ñùÿÿÿÿ8’š…‘•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(®Ó²Êúÿÿÿÿ8’š…‘•-
+gsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(•öÀø8’š…‘•-
+squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(îÁú½8’š…‘•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(¦‰Ğ‰øÿÿÿÿ8’š…‘•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(øŸïµ8’š…‘•-
+8squid:S1643"Use a StringBuilder instead.(ëæÆ8’š…‘•-
+=squid:S1643"Use a StringBuilder instead.(úÚ…–úÿÿÿÿ8’š…‘•-
+=squid:S1170"!Make this final field static too.(—î²×8’š…‘•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(øŸïµ8’š…‘•-
+=squid:S1643"Use a StringBuilder instead.(½ò¼¬şÿÿÿÿ8’š…‘•-
+gsquid:S1192"FDefine a constant instead of duplicating this literal "oldId" 4 times.(–§œüÿÿÿÿ8’š…‘•-
+¢squid:S1186"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(»”¹˜úÿÿÿÿ8’š…‘•-
+U"squid:SwitchLastCaseIsDefaultCheck""Add a default case to this switch.(•öÀø8’š…‘•-
+psquid:S00116"SRename this field "RingName" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(˜€¨³8’š…‘•-
+8squid:S1643"Use a StringBuilder instead.(£˜ôÖ8’š…‘•-
+gsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(ş³°ÿ8’š…‘•-
+Fsquid:S1481"*Remove this unused "count" local variable.(æÕ¿¼8’š…‘•-

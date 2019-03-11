@@ -1,0 +1,9 @@
+
+osquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(‡Á¶©şÿÿÿÿ8Ì„ÏÛ•-
+qsquid:S1450"URemove the "mSpeak" field and declare it as a local variable in the relevant methods.(ŒŸÃÃ8­ŸÏÛ•-
+usquid:S1450"TRemove the "mStop" field and declare it as a local variable in the relevant methods.(¥òÂ¨ÿÿÿÿÿ8­ŸÏÛ•-
+Bsquid:S1075"&Remove this hard-coded path-delimiter.(ØÃÑÎ8­ŸÏÛ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(íÀ‘öøÿÿÿÿ8­ŸÏÛ•-
+lsquid:CommentedOutCodeLine"<This block of commented-out lines of code should be removed.(Ä€§”øÿÿÿÿ8­ŸÏÛ•-
+usquid:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(ãŞõ•8­ŸÏÛ•-
+Bsquid:S1075"&Remove this hard-coded path-delimiter.(Ü¤ æ8­ŸÏÛ•-

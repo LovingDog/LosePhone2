@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 
 import com.example.wanghanp.base.bean.SongInfo;
 import com.example.wanghanp.losephone.aidl.Song;
+import com.example.wanghanp.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -84,9 +85,9 @@ public class MediaManager {
     private synchronized String getAlbumArtPicPath(Context context, String albumId) {
 
         // 小米应用商店检测crash ，错误信息：[31188,0,com.duan.musicoco,13155908,java.lang.IllegalStateException,Unknown URL: content://media/external/audio/albums/null,Parcel.java,1548]
-//        if (!StringUtils.isReal(albumId)) {
-//            return null;
-//        }
+        if (!StringUtils.isReal(albumId)) {
+            return null;
+        }
 
         String[] projection = {MediaStore.Audio.Albums.ALBUM_ART};
         String imagePath = null;
